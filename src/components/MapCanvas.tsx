@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { LocateFixed, Minus, Plus } from 'lucide-react'
-import { PLACES, useStore, type Place } from '../store'
+import { PLACES, type Place } from '../store'
+import { useLocale } from '../i18n/locale'
 
 export type Pt = { x: number; y: number }
 const W = 800, H = 640
@@ -59,7 +60,7 @@ export default function MapCanvas(props: {
   cars?: MapCar[]; onPick?: (p: Place) => void; dark?: boolean; controls?: boolean; focus?: Pt; zoom?: number; className?: string; controlsClass?: string
   selectedCar?: string; onCar?: (id: string) => void; extraRoutes?: { pts: Pt[]; color: string; active?: boolean }[]; pulse?: boolean; children?: ReactNode; labels?: boolean
 }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const [z, setZ] = useState(props.zoom ?? 1)
   const [center, setCenter] = useState<Pt | null>(null)
   const f = center ?? props.focus ?? { x: W / 2, y: H / 2 }

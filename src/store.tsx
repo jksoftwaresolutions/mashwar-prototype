@@ -1,11 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
 import { MARKET, cancellationFee, formatMoney, waitingFee, type Lang, type Category, type PricingConfig, type VehicleCategory } from './config/market'
+import { useLocale, type Locale } from './i18n/locale'
 export type { Lang, Category } from './config/market'
-import { messages, type MsgKey } from './i18n/messages'
-/** `t('payment.card')` looks up the shared dictionary; `t(ar, en)` picks an inline pair. */
-export type Translate = { (key: MsgKey): string; (ar: string, en: string): string }
-export type Role = 'showcase' | 'passenger' | 'driver' | 'admin'
+export type { Translate } from './i18n/locale'
+import { useRole, type Role } from './role'
+export type { Role } from './role'
 export type Status = 'requested' | 'accepted' | 'arrived' | 'in_progress' | 'completed' | 'cancelled'
 export type Payment = 'cash' | 'card'
 
@@ -137,8 +137,8 @@ export function estimate(p: Pricing, a: Place, b: Place, cat: Category) {
   return { km, mins, fare: calcFare(p, km, mins, cat) }
 }
 
-interface Store {
-  lang: Lang; setLang: (l: Lang) => void; t: Translate; dir: 'rtl' | 'ltr'; money: (n: number) => string
+/** Ride simulation state. Language fields are re-exposed from LocaleProvider for screens that need both. */
+interface Store extends Locale {
   role: Role; setRole: (r: Role) => void
   trips: Trip[]; liveId: string | null; live: Trip | undefined
   drivers: Driver[]; riders: Rider[]; coupons: Coupon[]; tickets: Ticket[]; pricing: Pricing; notices: Notice[]; toasts: Toast[]; chat: ChatMsg[]
@@ -164,8 +164,8 @@ const Ctx = createContext<Store>(null as unknown as Store)
 export const useStore = () => useContext(Ctx)
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>('ar')
-  const [role, setRoleState] = useState<Role>('showcase')
+  const { lang, setLang, t, dir, money } = useLocale()
+  const { role, setRole } = useRole()
   const [trips, setTrips] = useState<Trip[]>(TRIPS_SEED)
   const [liveId, setLiveId] = useState<string | null>(null)
   const [drivers, setDrivers] = useState(DRIVERS_SEED)
@@ -183,14 +183,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const tripSeq = useRef(48300) // sequential demo trip ids; production ids come from the server
   const rejectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const t = useCallback(((a: string, e?: string) => (e === undefined ? messages[a as MsgKey][lang] : lang === 'ar' ? a : e)) as Translate, [lang])
-  const money = useCallback((n: number) => formatMoney(n, lang), [lang])
   const live = trips.find((x) => x.id === liveId)
 
-  useEffect(() => {
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
-    document.documentElement.lang = lang
-  }, [lang])
 
   const toast = useCallback((ar: string, en: string, tone: Toast['tone'] = 'success') => {
     const id = ++idRef.current
@@ -202,7 +196,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [])
   const markRead = (r: Notice['role']) => setNotices((x) => x.map((n) => (n.role === r ? { ...n, read: true } : n)))
   const updateTrip = useCallback((id: string, patch: Partial<Trip>) => setTrips((x) => x.map((tr) => (tr.id === id ? { ...tr, ...patch } : tr))), [])
-  const setRole = (r: Role) => { setRoleState(r); window.scrollTo({ top: 0 }) }
 
   // Simulated movement — progress values are illustrative, not GPS data.
   useEffect(() => {
@@ -337,7 +330,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const reset = () => {
     if (rejectTimer.current) clearTimeout(rejectTimer.current)
     setTrips(TRIPS_SEED); setLiveId(null); setDrivers(DRIVERS_SEED); setRiders(RIDERS_SEED); setCoupons(COUPONS_SEED); setTickets(TICKETS_SEED); setPricing(PRICING_SEED)
-    setChat([]); setDriverOnline(true); setNotices(noticesSeed()); setPAuthed(false); setDAuthed(false); setRoleState('showcase'); setToasts([])
+    setChat([]); setDriverOnline(true); setNotices(noticesSeed()); setPAuthed(false); setDAuthed(false); setRole('showcase'); setToasts([])
     toast('تمت إعادة تشغيل التجربة', 'Demo has been reset', 'info')
   }
   const sendChat = (from: ChatMsg['from'], text: string) => setChat((c) => [...c, { from, text, at: Date.now() }])
@@ -350,7 +343,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }
 
   const value: Store = {
-    lang, setLang, t, dir: lang === 'ar' ? 'rtl' : 'ltr', money, role, setRole, trips, liveId, live, drivers, riders, coupons, tickets, pricing, notices, toasts, chat,
+    lang, setLang, t, dir, money, role, setRole, trips, liveId, live, drivers, riders, coupons, tickets, pricing, notices, toasts, chat,
     driverOnline, setDriverOnline, pAuthed, setPAuthed, dAuthed, setDAuthed, toast, notify, markRead, requestRide, updateTrip, cancelRide, acceptRide, rejectRide,
     arrive, startRide, endRide, rate, advance, fastForward, reset, sendChat, setDrivers, setRiders, setCoupons, setTickets, setPricing, validateCoupon, addTicket,
   }

@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { Car, Languages, LayoutDashboard, RotateCcw, Smartphone } from 'lucide-react'
 import { useStore, type Role } from '../store'
+import { useRole } from '../role'
+import { useLocale } from '../i18n/locale'
 import { ConfirmationModal, cx } from './ui'
 
 /** Prototype chrome shared by the shell, the admin header and the showcase. */
 export function RoleSwitcher({ dark, compact }: { dark?: boolean; compact?: boolean }) {
-  const { role, setRole, t } = useStore()
+  const { t } = useLocale()
+  const { role, setRole } = useRole()
   const items: { id: Role; ar: string; en: string; icon: typeof Car }[] = [
     { id: 'passenger', ar: 'الراكب', en: 'Rider', icon: Smartphone },
     { id: 'driver', ar: 'الكابتن', en: 'Captain', icon: Car },
@@ -24,7 +27,7 @@ export function RoleSwitcher({ dark, compact }: { dark?: boolean; compact?: bool
 }
 
 export function LangSwitch({ dark }: { dark?: boolean }) {
-  const { lang, setLang } = useStore()
+  const { lang, setLang } = useLocale()
   return (
     <button onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')} lang={lang === 'ar' ? 'en' : 'ar'} aria-label={lang === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'} className={cx('flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold transition', dark ? 'bg-white/10 text-white hover:bg-white/15' : 'border border-line bg-white text-ink hover:border-[#cfd6e0]')}>
       <Languages size={15} />{lang === 'ar' ? 'English' : 'العربية'}

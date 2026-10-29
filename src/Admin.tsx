@@ -4,6 +4,7 @@ import {
   ArrowLeft, ArrowRight, Bell, Car, CarFront, ChartPie, CheckCircle2, CreditCard, Eye, FileBarChart, Headphones, LayoutGrid, Map as MapIcon, Menu, Plus, Radio, Route, Search, Settings, Star, Ticket, TrendingUp, Users, UserRound, X, Activity, Wallet,
 } from 'lucide-react'
 import { CATEGORIES, PLACES, estimate, inDays, tripTotal, fmtDate, fmtTime, timeAgo, useStore, type Driver, type Trip, type Ticket as Tk, type Coupon } from './store'
+import { useLocale } from './i18n/locale'
 import { MARKET, captainNet, commissionPct, currencySymbol } from './config/market'
 import MapCanvas, { pointAlong, routePts, type MapCar } from './components/MapCanvas'
 import { Avatar, Btn, Card, ConfirmationModal, Drawer, Logo, Modal, Pill, RideStatusTimeline, Segmented, Stars, StatusBadge, Toggle, cx } from './components/ui'
@@ -126,7 +127,7 @@ function SearchBox({ value, onChange, ph }: { value: string; onChange: (v: strin
   return <div className="relative"><Search size={15} className="absolute start-3 top-1/2 -translate-y-1/2 text-muted" /><input type="search" aria-label={ph} value={value} onChange={(e) => onChange(e.target.value)} placeholder={ph} className="h-10 w-full rounded-xl border border-line bg-white ps-9 pe-3 text-sm outline-none focus:border-emerald sm:w-64" /></div>
 }
 export function DataTable<T>({ rows, cols, onRow, empty }: { rows: T[]; cols: { h: string; r: (x: T) => React.ReactNode; cls?: string }[]; onRow?: (x: T) => void; empty?: string }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   return (
     <Card className="min-w-0 overflow-hidden">
       <div className="thin-scroll overflow-x-auto">
@@ -260,7 +261,7 @@ function Trips({ initialQ }: { initialQ: string }) {
   )
 }
 function TripDetail({ trip }: { trip: Trip }) {
-  const { t, money, lang } = useStore()
+  const { t, money, lang } = useLocale()
   const { dn, rn } = useNames()
   return (
     <div className="space-y-5">
@@ -383,12 +384,12 @@ function Drivers() {
   )
 }
 function DriverStatus({ s }: { s: Driver['status'] }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const m = { available: ['bg-mint text-emerald-d', 'متاح', 'Available'], enroute: ['bg-[#FBF3E6] text-[#9A6B2A]', 'في الطريق', 'En route'], ontrip: ['bg-[#EAF2FF] text-[#2E5FB8]', 'في رحلة', 'On trip'], offline: ['bg-[#EEF1F5] text-muted', 'غير متصل', 'Offline'] }[s]
   return <Pill className={m[0]}>{t(m[1], m[2])}</Pill>
 }
 function Approval({ a }: { a: Driver['approval'] }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const m = { approved: ['bg-mint text-emerald-d', 'معتمد', 'Approved'], pending: ['bg-[#FFF5E6] text-[#A86A12]', 'قيد المراجعة', 'Pending'], suspended: ['bg-[#FDECEC] text-[#C2413A]', 'موقوف', 'Suspended'] }[a]
   return <Pill className={m[0]}>{t(m[1], m[2])}</Pill>
 }

@@ -1,6 +1,9 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { ArrowLeft, ArrowRight, BarChart3, Car, ChevronDown, FastForward, Home, SkipForward, Sparkles } from 'lucide-react'
 import { StoreProvider, tripTotal, useStore, type Role } from './store'
+import { useLocale } from './i18n/locale'
+import { LocaleProvider } from './i18n/locale'
+import { RoleProvider, useRole } from './role'
 import { LangSwitch, ResetButton, RoleSwitcher } from './components/shell'
 import { Btn, Logo, PhoneFrame, RideStatusTimeline, StatusBadge, Toasts, cx } from './components/ui'
 import Showcase from './Showcase'
@@ -17,15 +20,19 @@ const preloadApps = () => { loadPassenger(); loadDriver(); loadAdmin() }
 
 export default function App() {
   return (
-    <StoreProvider>
-      <Shell />
-      <Toasts />
-    </StoreProvider>
+    <LocaleProvider>
+      <RoleProvider>
+        <StoreProvider>
+          <Shell />
+          <Toasts />
+        </StoreProvider>
+      </RoleProvider>
+    </LocaleProvider>
   )
 }
 
 function Loading({ dark }: { dark?: boolean }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   return (
     <div role="status" className={cx('grid h-full min-h-[50dvh] w-full place-items-center', dark ? 'bg-navy text-white/60' : 'text-muted')}>
       <span className="flex items-center gap-2 text-sm"><span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />{t('common.loading')}</span>
@@ -34,7 +41,7 @@ function Loading({ dark }: { dark?: boolean }) {
 }
 
 function Shell() {
-  const { role } = useStore()
+  const { role } = useRole()
   useEffect(() => { const id = setTimeout(preloadApps, 1200); return () => clearTimeout(id) }, [])
   if (role === 'showcase') return <Showcase />
   if (role === 'admin') return <Suspense fallback={<Loading />}><AdminApp /></Suspense>
@@ -51,7 +58,8 @@ function Shell() {
 }
 
 function TopBar() {
-  const { setRole, t, dir } = useStore()
+  const { t, dir } = useLocale()
+  const { setRole } = useRole()
   const Back = dir === 'rtl' ? ArrowRight : ArrowLeft
   return (
     <header className="sticky top-0 z-50 flex h-14 items-center justify-between gap-2 border-b border-line/70 bg-white/75 px-3 backdrop-blur-xl sm:h-16 sm:px-6">
@@ -68,7 +76,8 @@ function TopBar() {
 }
 
 function StoryPanel() {
-  const { role, t } = useStore()
+  const { t } = useLocale()
+  const { role } = useRole()
   const p = role === 'passenger'
   const points = p
     ? [[t('حجز في ثلاث خطوات', 'Book in three taps'), t('اختر الوجهة، الفئة، ثم أكّد الطلب.', 'Pick destination, category, confirm.')], [t('تتبّع مباشر', 'Live tracking'), t('موقع الكابتن ومراحل الرحلة بوضوح.', 'Clear captain location and trip stages.')], [t('دفع وكوبونات', 'Payments & coupons'), t('جرّب كود WELCOME15 عند التأكيد.', 'Try code WELCOME15 at checkout.')]]

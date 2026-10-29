@@ -14,6 +14,8 @@ src/
   config/market.ts      market configuration: country, city, currency, locale, calling code, vehicle categories,
                         pricing, waiting and cancellation fees, provisional commission; fee helpers (SA only)
   i18n/messages.ts      typed shared-string dictionary, read with t('key')
+  i18n/locale.tsx       LocaleProvider / useLocale(): lang, t, dir, money (changes only on language switch)
+  role.tsx              RoleProvider / useRole(): which experience is on screen
   Showcase.tsx          landing and presentation screen
   Passenger.tsx         passenger app (onboarding, booking, live trip, rating, trips, wallet, account)
   Driver.tsx            captain app (login, online toggle, requests, navigation, earnings, history, account)

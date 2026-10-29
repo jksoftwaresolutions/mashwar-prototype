@@ -151,3 +151,8 @@ These rules come from defects found while browser-testing the export. Follow the
 ### Translations
 
 - Shared strings live in `src/i18n/messages.ts` and are read with `t('payment.card')`. Screen copy still uses inline `t(ar, en)` pairs and moves to the dictionary screen by screen. Flutter ARB files should be generated from the same keys.
+
+### State and re-renders
+
+- Read language data with `useLocale()` and the current experience with `useRole()`. Use `useStore()` only in components that show ride data.
+- The ride store changes every 500 ms during a live trip. Components that subscribe to it re-render on every tick, and so do their children. Before this split, the shell header re-rendered 26 times in 5 s during a trip; it now re-renders 0 times.

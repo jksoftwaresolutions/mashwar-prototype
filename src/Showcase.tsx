@@ -1,12 +1,15 @@
 import { ArrowLeft, ArrowRight, BarChart3, Car, CheckCircle2, CreditCard, MapPin, MessageSquareText, Navigation, Satellite, Smartphone, Star, type LucideIcon } from 'lucide-react'
 import { useStore, place, type Role } from './store'
+import { useRole } from './role'
+import { useLocale } from './i18n/locale'
 import { MARKET, captainNet, commissionPct } from './config/market'
 import MapCanvas, { routePts, pointAlong } from './components/MapCanvas'
 import { Avatar, CarIllustration, Logo, cx } from './components/ui'
 import { LangSwitch } from './components/shell'
 
 export default function Showcase() {
-  const { t, setRole, dir } = useStore()
+  const { t, dir } = useLocale()
+  const { setRole } = useRole()
   const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight
 
   const doors: { role: Exclude<Role, 'showcase'>; icon: LucideIcon; title: string; body: string; dark?: boolean }[] = [
@@ -128,7 +131,7 @@ function DeviceStage() {
 }
 
 function Lifecycle({ onStart }: { onStart: () => void }) {
-  const { t, dir } = useStore()
+  const { t, dir } = useLocale()
   const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight
   const steps: { who: string; icon: LucideIcon; title: string; body: string }[] = [
     { who: t('الراكب', 'Rider'), icon: MapPin, title: t('يطلب رحلة', 'Requests a ride'), body: t('يختار الوجهة والفئة ويرى الأجرة قبل التأكيد.', 'Picks destination and category, sees the fare upfront.') },
@@ -166,7 +169,7 @@ function Lifecycle({ onStart }: { onStart: () => void }) {
 }
 
 function Simulated() {
-  const { t } = useStore()
+  const { t } = useLocale()
   const items: [LucideIcon, string, string][] = [
     [Satellite, t('الخرائط والتتبع', 'Maps and tracking'), t('خريطة SVG توضيحية للرياض وحركة محاكاة، بدون GPS.', 'Illustrative SVG map of Riyadh with simulated movement, no GPS.')],
     [CreditCard, t('المدفوعات', 'Payments'), t('بطاقات ومحفظة وتحويلات تجريبية، بدون أي عملية مالية.', 'Demo cards, wallet and payouts. No money moves.')],

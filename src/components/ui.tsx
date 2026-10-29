@@ -1,13 +1,14 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { AlertTriangle, CheckCircle2, Info, Star, X, Check } from 'lucide-react'
 import { useStore, type Status, type Category } from '../store'
+import { useLocale } from '../i18n/locale'
 
 export const cx = (...a: (string | false | null | undefined)[]) => a.filter(Boolean).join(' ')
 /** 'Khalid Alotaibi' → 'KA'. Arabic initials are stored on the record. */
 export const latinInitials = (name: string) => name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
 
 export function Logo({ light, size = 'md' }: { light?: boolean; size?: 'sm' | 'md' | 'lg' }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const box = size === 'lg' ? 'h-14 w-14 rounded-2xl' : size === 'sm' ? 'h-8 w-8 rounded-[10px]' : 'h-10 w-10 rounded-xl'
   return (
     <div className="flex items-center gap-2.5">
@@ -76,7 +77,7 @@ export function Segmented<T extends string>({ value, onChange, options, dark, cl
 }
 
 export function Stars({ value, onChange, size = 30 }: { value: number; onChange?: (n: number) => void; size?: number }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   if (!onChange)
     return (
       <div className="flex gap-1.5" dir="ltr" role="img" aria-label={t(`التقييم ${value} من 5`, `Rated ${value} out of 5`)}>
@@ -103,7 +104,7 @@ export const STATUS_META: Record<Status, { cls: string; dot: string }> = {
   cancelled: { cls: 'bg-[#FDECEC] text-[#C2413A]', dot: 'bg-[#E25B53]' },
 }
 export function StatusBadge({ s }: { s: Status }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const m = STATUS_META[s]
   return <span className={cx('inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold', m.cls)}><span className={cx('h-1.5 w-1.5 rounded-full', m.dot)} />{t(`status.${s}`)}</span>
 }
@@ -113,7 +114,7 @@ export function Pill({ children, className }: { children: ReactNode; className?:
 
 const STEPS: Exclude<Status, 'cancelled'>[] = ['requested', 'accepted', 'arrived', 'in_progress', 'completed']
 export function RideStatusTimeline({ status, dark, vertical }: { status: Status; dark?: boolean; vertical?: boolean }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const idx = STEPS.findIndex((x) => x === status)
   if (vertical)
     return (
@@ -139,7 +140,7 @@ export function RideStatusTimeline({ status, dark, vertical }: { status: Status;
 }
 
 export function Modal({ open, onClose, children, title, width = 'max-w-md', label }: { open: boolean; onClose: () => void; children: ReactNode; title?: string; width?: string; label?: string }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const id = useId()
   const ref = useDialog(open, onClose)
   if (!open) return null
@@ -160,7 +161,7 @@ export function Modal({ open, onClose, children, title, width = 'max-w-md', labe
 }
 
 export function ConfirmationModal({ open, onClose, onConfirm, title, body, confirm, danger }: { open: boolean; onClose: () => void; onConfirm: () => void; title: string; body: string; confirm: string; danger?: boolean }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   return (
     <Modal open={open} onClose={onClose} width="max-w-sm" label={title}>
       <div className={cx('mb-4 grid h-12 w-12 place-items-center rounded-2xl', danger ? 'bg-[#FDECEC] text-[#C2413A]' : 'bg-mint text-emerald')}>{danger ? <AlertTriangle /> : <CheckCircle2 />}</div>
@@ -175,7 +176,7 @@ export function ConfirmationModal({ open, onClose, onConfirm, title, body, confi
 }
 
 export function Drawer({ open, onClose, children, title }: { open: boolean; onClose: () => void; children: ReactNode; title: string }) {
-  const { dir, t } = useStore()
+  const { dir, t } = useLocale()
   const ref = useDialog(open, onClose)
   if (!open) return null
   return (
@@ -194,7 +195,7 @@ export function Drawer({ open, onClose, children, title }: { open: boolean; onCl
 
 /** Bottom sheet scoped to its positioned parent (phone frame). */
 export function Sheet({ open, onClose, children, title, dark }: { open: boolean; onClose: () => void; children: ReactNode; title?: string; dark?: boolean }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const ref = useDialog(open, onClose)
   if (!open) return null
   return (

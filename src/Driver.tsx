@@ -5,6 +5,7 @@ import {
   Settings, Star, User, Wallet, TrendingUp, ShieldCheck, Route, CornerUpLeft, Check,
 } from 'lucide-react'
 import { CATEGORIES, fmtDate, fmtTime, timeAgo, tripTotal, useStore, type Trip } from './store'
+import { useLocale } from './i18n/locale'
 import { MARKET, captainNet, commissionPct } from './config/market'
 import MapCanvas, { pointAlong, routePts } from './components/MapCanvas'
 import { Avatar, Btn, ConfirmationModal, Logo, Segmented, Stars, StatusBar, Toggle, cx } from './components/ui'
@@ -20,8 +21,8 @@ export default function DriverApp() {
   return <Main />
 }
 
-function useBack() { const { dir } = useStore(); return dir === 'rtl' ? ArrowRight : ArrowLeft }
-function Chev() { const { dir } = useStore(); return dir === 'rtl' ? <ChevronLeft size={18} className="text-white/30" /> : <ChevronRight size={18} className="text-white/30" /> }
+function useBack() { const { dir } = useLocale(); return dir === 'rtl' ? ArrowRight : ArrowLeft }
+function Chev() { const { dir } = useLocale(); return dir === 'rtl' ? <ChevronLeft size={18} className="text-white/30" /> : <ChevronRight size={18} className="text-white/30" /> }
 
 function Login() {
   const { t, setDAuthed, drivers, toast } = useStore()
@@ -68,7 +69,7 @@ function Login() {
 }
 
 function Main() {
-  const { t } = useStore()
+  const { t } = useLocale()
   const [tab, setTab] = useState<Tab>('home')
   const [sub, setSub] = useState<Sub>(null)
   if (sub) return <SubPage sub={sub} onBack={() => setSub(null)} />
@@ -255,7 +256,7 @@ function ActiveTrip({ trip }: { trip: Trip }) {
 
 /** Waiting time since arrival; the fee itself is settled when the trip starts (store.startRide). */
 function WaitingMeter({ since, freeMins, perMin }: { since: number; freeMins: number; perMin: string }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const secs = Math.max(0, Math.floor((Date.now() - since) / 1000))
   const free = secs < freeMins * 60
   const mm = `${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`

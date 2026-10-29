@@ -4,6 +4,7 @@ import {
   MapPin, MessageCircle, ChevronDown, Phone, Plus, Route, Search, Send, Share2, ShieldAlert, ShieldCheck, Star, Tag, Ticket, User, Users, Wallet, X, Clock3, History, Siren, Map as MapIcon,
 } from 'lucide-react'
 import { CATEGORIES, PLACES, distKm, estimate, tripTotal, fmtDate, fmtTime, place, timeAgo, useStore, type Category, type Payment, type Place, type Trip } from './store'
+import { useLocale } from './i18n/locale'
 import { MARKET, cancellationFee, formatPhone } from './config/market'
 import MapCanvas, { pointAlong, routePts } from './components/MapCanvas'
 import { ChatSheet, Empty, RideCard } from './components/ride'
@@ -20,11 +21,11 @@ export default function PassengerApp() {
 }
 
 function useBack() {
-  const { dir } = useStore()
+  const { dir } = useLocale()
   return dir === 'rtl' ? ArrowRight : ArrowLeft
 }
 const Chevron = () => {
-  const { dir } = useStore()
+  const { dir } = useLocale()
   return dir === 'rtl' ? <ChevronLeft size={18} className="text-muted" /> : <ChevronRight size={18} className="text-muted" />
 }
 
@@ -116,7 +117,7 @@ function Onboarding() {
 
 /* ---------------- Main (tabs + booking) ---------------- */
 function Main() {
-  const { t } = useStore()
+  const { t } = useLocale()
   const [tab, setTab] = useState<Tab>('home')
   const [sub, setSub] = useState<Sub>(null)
   const [stage, setStage] = useState<'home' | 'search' | 'ride' | 'confirm'>('home')
@@ -220,7 +221,7 @@ function HomeScreen({ pickup, onSearch, onPick, openSub }: { pickup: Place; onSe
 }
 
 function SearchScreen({ pickup, dest, setPickup, onBack, onDone }: { pickup: Place; dest: Place | null; setPickup: (p: Place) => void; onBack: () => void; onDone: (p: Place, d: Place) => void }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const Back = useBack()
   const [field, setField] = useState<'pickup' | 'dest'>('dest')
   const [p, setP] = useState(pickup)
@@ -575,7 +576,7 @@ function Completed({ trip }: { trip: Trip }) {
 
 /* ---------------- Tabs ---------------- */
 function PageHeader({ title, onBack, action }: { title: string; onBack?: () => void; action?: React.ReactNode }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const Back = useBack()
   return (
     <div className="shrink-0 bg-bg"><StatusBar />
@@ -634,7 +635,7 @@ function TripDetailSheet({ trip, onClose }: { trip: Trip | null; onClose: () => 
 }
 
 function ReportForm({ tripId, onDone }: { tripId: string; onDone: (cat: string, msg: string) => void }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const cats = [t('سلوك الكابتن', 'Captain behaviour'), t('مشكلة في الأجرة', 'Fare issue'), t('أغراض مفقودة', 'Lost item'), t('أخرى', 'Other')]
   const [c, setC] = useState(cats[0])
   const [m, setM] = useState('')
@@ -817,7 +818,7 @@ function SubPage({ sub, onBack }: { sub: Exclude<Sub, null>; onBack: () => void 
 }
 
 function FAQ({ q }: { q: string }) {
-  const { t } = useStore()
+  const { t } = useLocale()
   const [o, setO] = useState(false)
   return (
     <button onClick={() => setO(!o)} className="w-full rounded-2xl bg-white p-4 text-start">
