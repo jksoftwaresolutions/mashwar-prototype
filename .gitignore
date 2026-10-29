@@ -1,0 +1,21 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+.cache/
+.vite/
+vite.config.*.timestamp-*
+*.tsbuildinfo
+
+# Environment and logs
+.env*
+*-debug.log*
+logs/
+*.log
+
+# Playwright
+/e2e/.results/
+/playwright-report/
+
+# Local tooling
+.tmp-*
