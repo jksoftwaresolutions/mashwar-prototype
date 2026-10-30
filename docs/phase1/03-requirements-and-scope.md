@@ -1,8 +1,8 @@
 # 03 — Requirements and Scope
 
 **Status:** Draft for client review — Phase 1
-**Source:** React review prototype (`src/`), `HANDOFF.md`, `DESIGN_SYSTEM.md`, `src/config/market.ts`
-**Target production stack:** Flutter rider and captain apps · React/Next.js admin · NestJS backend · PostgreSQL + PostGIS · Redis (live locations) · WebSockets · licensed map, payment, SMS and push providers
+**Source:** React review prototype (`prototype/src/`), `HANDOFF.md`, `DESIGN_SYSTEM.md`, `prototype/src/config/market.ts`
+**Target production stack:** Flutter rider and captain apps · React (Vite) SPA admin · NestJS backend · PostgreSQL + PostGIS · Redis (live locations) · WebSockets · licensed map, payment, SMS and push providers
 
 ## 0. Delivery status categories
 
@@ -23,14 +23,14 @@ Every requirement in this document has one of three status tags.
 | ID | Requirement | Status | Notes |
 |---|---|---|---|
 | R-01 | Register / log in with a Saudi mobile number (+966, 9 digits) and an OTP | [P] UI · [X] real OTP | The demo OTP is always `1234`. Production needs a licensed Saudi SMS provider plus rate limiting. |
-| R-02 | Accept the terms and privacy policy at signup | [D] | Text notice only. Production needs explicit, recorded consent (PDPL). |
+| R-02 | Accept the terms and privacy policy at signup | [D] | Text notice only. Production needs explicit, recorded consent under PDPL (to verify with counsel). |
 | R-03 | Bilingual UI (Arabic default, English), with the language switchable at any time | [P] | |
 | R-04 | Show the current pickup and nearby available captains on a map | [P] simulated | SVG map of Riyadh. [X] real map SDK and device location. |
 | R-05 | Search destinations, pick on the map, swap pickup and destination | [P] fixed list of 10 places | [X] places / geocoding API, free-text search. |
 | R-06 | Saved places (Home, Work, custom): add and remove | [P] in memory | [X] persistence. |
 | R-07 | Choose a vehicle category (Economy, Comfort, Family) with seats, ETA and an upfront fare estimate | [P] | ETAs are fixed demo values. Distance is a straight-line approximation. [X] routing-based distance and time. |
 | R-08 | Choose a payment method (saved card or cash) | [P] simulated | Wallet balance is **not** offered at booking. See open questions. |
-| R-09 | Apply a promo code (validity, active flag, usage limit) | [P] | **Expiry dates are not checked.** See section 7. |
+| R-09 | Apply a promo code (validity, active flag, expiry, usage limit) | [P] | Expiry is checked (G6 fixed). There is no per-user limit. See section 7. |
 | R-10 | Confirm a ride request. Only one active ride per rider | [P] | |
 | R-11 | Live trip states: searching → captain en route → arrived → in progress → completed | [P] simulated | See `04-trip-lifecycle-spec.md`. |
 | R-12 | Captain card: name, rating, car, plate, ETA | [P] | |
@@ -59,7 +59,7 @@ Every requirement in this document has one of three status tags.
 | C-02 | Captain onboarding: personal data, national ID / iqama, licence, vehicle registration, insurance, photos, bank account (IBAN) | [X] | Not designed. Only the *documents status* page exists [D]. TGA requirements decide the document list. |
 | C-03 | Approval gate: only approved captains can go online | [D] | Admin approve / suspend works [P], but it is **not enforced** on the demo captain. |
 | C-04 | Online / offline toggle | [P] | |
-| C-05 | Receive ride offers with a 30 s countdown, estimated net earnings, distance, route, rider name and rating, payment type | [P] UI | **The countdown has no effect when it reaches 0.** Distance to pickup ("1.8 km") is fixed text. |
+| C-05 | Receive ride offers with a 30 s countdown, estimated net earnings, distance, route, rider name and rating, payment type | [P] UI | At 0 the offer expires and is passed on like a decline (G1 fixed). Distance to pickup ("1.8 km") is fixed text. |
 | C-06 | Accept or decline an offer. A declined offer is reassigned | [P] simulated | Reassignment always goes to one fixed demo captain after 3 s. |
 | C-07 | Navigate to pickup and to the destination | [D] illustrative banner | [X] turn-by-turn navigation (hand-off to Google Maps / Waze, or an in-app SDK). |
 | C-08 | Mark arrived, start trip, end trip (with confirmation) | [P] | |
@@ -86,11 +86,11 @@ Every requirement in this document has one of three status tags.
 | A-05 | Riders | Search, detail, history, block / unblock | [P] | Block is **not enforced** on the demo rider. |
 | A-06 | Vehicles | Fleet by category | [P] | [X] vehicle CRUD, inspection / insurance expiry. |
 | A-07 | Payments | Collected, platform fee, captain payouts, transactions | [P] simulated | Excludes cancellation fees. All rows show "Settled". |
-| A-08 | Promotions | Create coupon (code, %, cap, limit), enable / disable, usage | [P] | The expiry date cannot be set (it is fixed to 2025-12-31). No budget or eligibility rules. |
+| A-08 | Promotions | Create coupon (code, %, cap, limit), enable / disable, usage | [P] | The expiry date cannot be set: it is fixed at 90 days after creation. No budget or eligibility rules. |
 | A-09 | Ratings | All / low ratings | [P] | |
 | A-10 | Support | Tickets by status, detail, start review, resolve | [P] | Internal notes are not saved. No assignment or SLA. |
 | A-11 | Reports | Completed vs cancelled, revenue, popular locations, categories, ratings, export | [P] illustrative | Export is a toast. [X] real reporting / CSV / finance exports. |
-| A-12 | Settings | Base, per km, per min, minimum fare, category multipliers, service-area toggles, fare preview | [P] | Waiting fee, cancellation fees and commission are **not editable**. Service-area toggles **do not affect booking**. |
+| A-12 | Settings | Base, per km, per min, minimum fare, category multipliers, service-area toggles, fare preview | [P] | Waiting and cancellation fees are editable. Commission is read-only and labelled "Provisional, not approved". Service-area toggles **do not affect booking**. |
 | A-13 | Admin authentication, roles and permissions (RBAC) | [X] | The prototype has a single implicit admin. |
 | A-14 | Audit log of admin actions | [X] | Required (HANDOFF §8). |
 | A-15 | Notifications centre | [P] in-app | |
@@ -139,7 +139,7 @@ All targets below are **proposed**, for the client to confirm. None is implement
 | ID | Requirement (proposed target) |
 |---|---|
 | NFR-AV-01 | 99.9 % monthly availability for the booking, dispatch and trip APIs |
-| NFR-AV-02 | No single point of failure: multi-AZ database, stateless API replicas, managed Redis |
+| NFR-AV-02 | Contract scope: managed PostgreSQL with automated backups, one application host with health checks and restart policy (see 07). Multi-AZ database and multiple API replicas are post-contract options |
 | NFR-AV-03 | RPO ≤ 5 min, RTO ≤ 1 h for the primary database |
 | NFR-AV-04 | Graceful degradation: active trips continue if the real-time channel drops (polling or push fallback) |
 | NFR-AV-05 | Idempotent write APIs and webhook handlers (see 04 and 10) |
@@ -154,7 +154,7 @@ All targets below are **proposed**, for the client to confirm. None is implement
 | NFR-SEC-04 | RBAC for admin users, MFA for admin login, least privilege |
 | NFR-SEC-05 | Audit log for all admin and financial actions (who, what, when, before / after) |
 | NFR-SEC-06 | OTP brute-force and SMS-pumping protection (rate limits, device checks) |
-| NFR-SEC-07 | OWASP ASVS L2 baseline. Penetration test before launch |
+| NFR-SEC-07 | OWASP ASVS L2 baseline. An independent penetration test before launch is recommended but is a post-contract option (see 11) |
 | NFR-SEC-08 | Masked phone numbers between rider and captain (recommended) |
 
 ### 5.4 Data protection: PDPL (نظام حماية البيانات الشخصية)
@@ -176,7 +176,7 @@ All targets below are **proposed**, for the client to confirm. None is implement
 | NFR-TGA-01 | The operator must hold the required TGA licence for app-based passenger transport. **Licensing status is an open question for the client** |
 | NFR-TGA-02 | Captain and vehicle eligibility checks per current TGA rules (for example nationality / residency, licence type, vehicle age and condition). The exact rules must be confirmed with TGA or counsel |
 | NFR-TGA-03 | Any data sharing or trip reporting that TGA requires is to be confirmed |
-| NFR-TGA-04 | Fare transparency: an upfront estimate and an itemised receipt (already reflected in the design) |
+| NFR-TGA-04 | Fare transparency: an upfront estimate and an itemised receipt (already reflected in the design). The specific TGA obligation is to verify with counsel |
 
 ### 5.6 Tax and invoicing: ZATCA (هيئة الزكاة والضريبة والجمارك)
 
@@ -184,7 +184,7 @@ All targets below are **proposed**, for the client to confirm. None is implement
 |---|---|
 | NFR-COMP-01 | VAT treatment of fares, waiting fees, cancellation fees, discounts and commission to be confirmed with a tax advisor (see 05, decisions) |
 | NFR-COMP-02 | Whether displayed prices are VAT-inclusive is an open question. The prototype does not show VAT |
-| NFR-COMP-03 | E-invoicing (FATOORA): issue compliant simplified tax invoices (B2C) with the required fields and QR code. Integrate with the ZATCA platform per the client's assigned integration wave |
+| NFR-COMP-03 | E-invoicing (FATOORA): issue compliant simplified tax invoices (B2C) with the required fields and QR code. Integrate with the ZATCA platform per the client's assigned integration wave (requirements and wave to verify with the client's tax advisor). ZATCA production integration is a post-contract item (see 11) |
 | NFR-COMP-04 | Invoicing model to be decided: who is the supplier of transport (the platform or the captain), and the invoicing of commission to captains |
 
 ### 5.7 Accessibility
@@ -212,22 +212,26 @@ All targets below are **proposed**, for the client to confirm. None is implement
 
 ### IN scope for MVP (proposed)
 
-- Rider and captain Flutter apps (iOS and Android) and the Next.js admin, covering the screens in `01-approved-design-checklist.md` once approved.
+- Rider and captain Flutter apps (iOS and Android) and the React (Vite) SPA admin, covering the screens in `01-approved-design-checklist.md` once approved.
 - Saudi Arabia, **one launch city** (Riyadh in the prototype; to be confirmed), SAR, Arabic and English.
-- OTP authentication. Captain onboarding with document upload and admin approval.
+- OTP authentication. Captains created and approved by admin (captain self-service KYC document upload is a post-contract option; see 11 §5.4).
 - Server-authoritative trip lifecycle, dispatch, offers with timeout and reassignment, cancellations, waiting fees.
 - Upfront fare quotes from the server, with three vehicle categories (or as approved).
-- Payments: card (via a licensed PSP, including mada and Apple Pay as agreed) and cash. Refunds. Captain cash ledger. Payouts (manual or semi-automatic).
+- Payments (client requirement): mada, Apple Pay and credit / debit cards through a licensed Saudi PSP, plus cash at launch. Sandbox integration during development (Phase 3). Later activation of the production gateway with the client's live keys at **no additional programming fee** (see 10). Refunds. Captain cash ledger. Payouts (manual or semi-automatic).
 - Coupons with expiry, limits and per-user rules.
 - Ratings (rider → captain; captain → rider if approved).
 - Support tickets for riders and captains. Safety sheet with share-trip and SOS escalation.
 - Push and in-app notifications. SMS for OTP.
-- ZATCA-compliant receipts / invoices.
+- In-app trip receipts. ZATCA e-invoicing production integration is post-contract (11 §5.4), pending the tax advisor's decisions (05 D5).
 - Admin: the 12 sections, RBAC, audit log, real-time live map, pricing settings including fees and commission.
+- Quality: automated tests (unit, widget, integration, API) plus a real-device test matrix on iOS and Android (Phase 4).
+- Publishing: App Store and Google Play publication of both apps under the **client's** developer accounts.
+- Warranty: 45-day implementation-defect warranty, starting after both apps are published.
+- Handover: documentation, source code, design files and assets transferred to the client, with the code in the client-owned GitHub repository when provided.
 
 ### OUT of scope for MVP (proposed, unless the client decides otherwise)
 
-- Multi-country or multi-city operations (the config layer is ready; see 09).
+- Multi-country or multi-city operations. The prototype's `MarketConfig` separates country values; production multi-market support is not built (see 09 §4).
 - Surge / dynamic pricing (decision pending; see 05).
 - Scheduled rides, multi-stop rides, ride sharing / pooling.
 - Stored-value wallet and top-ups (pending a regulatory and PSP check; see 10).
@@ -265,8 +269,11 @@ These are recorded so that review feedback is not mistaken for production defect
 | G18 | Auto-accept, request sound and some captain stats (acceptance 98 %, online hours) are placeholders | `Driver.tsx` |
 | G19 | Rider support complaint category is stored in the current language only (`catEn = catAr`) | `TripDetailSheet`, `addTicket` |
 | G20 | Fractional waiting fees (0.5 SAR per minute) conflict with the market's 0-decimal currency setting. The formatter shows decimals when present | `market.ts` |
+| G21 | After a decline, the 3 s reassignment timer can mark captain `d4` en route and notify the rider even if the rider cancelled within those 3 s (only the trip row is guarded). See 04 §10 | `store.tsx` `rejectRide` |
 
-**Resolved in the polished review build** (verified by the Playwright suite in `e2e/`):
+File names in the table are relative to `prototype/src/`.
+
+**Resolved in the polished review build** (verified by the Playwright suite in `prototype/e2e/`):
 - G1: an unanswered 30 s captain offer now expires and is passed on like a decline.
 - G6: coupon expiry is validated; seed and admin-created expiry dates are relative to today.
 - G10: waiting and cancellation fees are editable in admin Settings; commission is shown read-only and labelled "Provisional, not approved".
@@ -279,7 +286,7 @@ These are recorded so that review feedback is not mistaken for production defect
 
 1. The launch market is Saudi Arabia with a single city. The prototype uses Riyadh.
 2. The client (or its operating entity) will obtain the TGA licence and the commercial registrations. MASHWAR's delivery team provides technical compliance only.
-3. The client will contract the payment provider, SMS provider, map provider and cloud hosting directly. Account ownership stays with the client.
+3. The client owns and contracts directly all production accounts: Apple Developer, Google Play, the PSP merchant account and Apple Pay merchant ID, the domain, cloud hosting, the SMS provider, the map provider and the GitHub repository (when provided). All source code, design files and assets transfer to the client. The delivery team works with scoped access granted by the client.
 4. "MASHWAR" (مَشوار) is a working name. Final branding may change the logo and colours, but not the layout.
 5. Captains are independent operators paid net of commission (the model shown in the prototype). This is not yet confirmed.
 6. Arabic and English are the only languages at launch.
@@ -296,7 +303,7 @@ These are recorded so that review feedback is not mistaken for production defect
 | Q4 | Commission model and rate (the 20 % is provisional) | 05, 10 |
 | Q5 | Are all fees approved: base, per km, per min, minimum, multipliers, waiting, cancellation? | 05 |
 | Q6 | Are prices shown VAT-inclusive? Who issues the invoice to the rider? | ZATCA, receipts |
-| Q7 | Which payment methods at launch: mada, Apple Pay, Visa / Mastercard, STC Pay, cash? | 10 |
+| Q7 | STC Pay / Google Pay in addition to the required mada, Apple Pay, cards and cash? | 10 |
 | Q8 | Is a stored-value wallet required at launch? | 10, regulation |
 | Q9 | Which PSP, if one is already chosen or preferred? | 10 |
 | Q10 | Captain payout frequency and method (weekly bank transfer, on demand)? | 10 |

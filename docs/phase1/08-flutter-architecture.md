@@ -4,12 +4,12 @@ Status: Draft for client review — Phase 1
 
 | | |
 |---|---|
-| Scope | The two native mobile apps: **MASHWAR Rider** and **MASHWAR Captain** (iOS + Android), built with Flutter from one monorepo |
-| Inputs | `DESIGN_SYSTEM.md` (tokens, components, RTL rules, Flutter mapping), `HANDOFF.md` §7, `src/Passenger.tsx`, `src/Driver.tsx`, `src/config/market.ts`, backend contract in 07 |
+| Scope | The two native mobile apps: **MASHWAR Rider** and **MASHWAR Captain** (iOS + Android), built with Flutter in the `mobile/` Dart workspace of the main repository |
+| Inputs | `DESIGN_SYSTEM.md` (tokens, components, RTL rules, Flutter mapping), `HANDOFF.md` §7, `prototype/src/Passenger.tsx`, `prototype/src/Driver.tsx`, `prototype/src/config/market.ts`, backend contract in 07 |
 | Architecture guidance | Official Flutter layered architecture (UI → optional domain → data; MVVM + repositories + services) |
-| Implementation state | **Not built.** The current rider and captain experiences exist only as screens in the React prototype with simulated data. |
+| Implementation state | **Scaffold only (Phase 1 technical foundation).** `mobile/apps/rider` and `mobile/apps/captain` are created with `flutter create`; the shared packages `mashwar_core` (ride status and transition rules, money in halalas) and `mashwar_ui` (design tokens, theme) exist with unit tests. No feature screens, API, maps or realtime yet; those are Phase 2 and 3 work. The current rider and captain experiences exist only as screens in the React prototype with simulated data. |
 
-Legend: **[Decided]** agreed direction · **[Proposal]** recommended, needs sign-off · **[Open]** see section 16.
+Legend: **[Decided]** agreed direction · **[Proposal]** recommended, needs sign-off · **[Proposal — technical, recommended]** technical decision taken by the delivery team, consistent with 04, 06, 07 and 11 · **[Open]** see section 16.
 
 ---
 
@@ -21,24 +21,20 @@ Legend: **[Decided]** agreed direction · **[Proposal]** recommended, needs sign
 4. Robust on poor mobile networks: reconnecting socket, idempotent retries, clear "reconnecting" states.
 5. Captain location tracking that is reliable in the background, battery-aware and compliant with Apple and Google store policies.
 
-## 2. Monorepo and packages **[Proposal]**
+## 2. Workspace and packages **[Proposal — technical, recommended]**
 
-Dart **pub workspaces** (Dart 3.6+) for dependency resolution, with **Melos** for scripts (analyse, test, codegen across packages).
+A Dart **pub workspace** under `mobile/` (Dart 3.6+). Scripts run with plain `dart` / `flutter` commands; Melos is not used in the contract scope. Two shared packages replace the earlier eight-package plan, to match the team size and budget:
 
 | Package | Contents | Used by |
 |---|---|---|
-| `apps/rider` | Rider app: onboarding/OTP, home map, booking sheet, live trip, rating, trips, wallet/payment methods, account, support | — |
-| `apps/captain` | Captain app: sign-in, onboarding/KYC upload, online toggle, offers, navigation to pickup/drop-off, trip flow, earnings, history, account | — |
-| `packages/mashwar_design_system` | `ThemeData`, `ThemeExtension`s (status colours, elevations, radii), typography, shared widgets (`MButton`, `MCard`, `StatusBadge`, `RideStatusTimeline`, `MSheet`, `Stars`, `Segmented`, toasts) | both apps |
-| `packages/mashwar_l10n` | ARB files (`app_ar.arb` default, `app_en.arb`), generated `AppLocalizations`, number/money/date formatters | both apps |
-| `packages/mashwar_models` | Immutable domain models (`freezed`): `Trip`, `RideStatus` (sealed), `Money`, `MarketConfig`, `VehicleCategory`, `Captain`, `Vehicle`, `Coupon`, `Ticket`, `AppNotification` | both apps |
-| `packages/mashwar_api` | OpenAPI-generated Dart client (raw API models) + thin hand-written services: `AuthService`, `TripService`, … ; interceptors (auth, idempotency, language, tracing) | both apps |
-| `packages/mashwar_realtime` | WebSocket client with reconnection, auth refresh, room resubscription, typed event stream | both apps |
-| `packages/mashwar_maps` | Map widget abstraction (markers, route polyline, camera helpers) so the provider can be swapped | both apps |
-| `packages/mashwar_core` | `Result<T>` type, error mapping, logger, environment/flavor config, connectivity, secure storage wrapper, Command helpers | all packages |
-| `packages/mashwar_location` | Captain-only background location service wrapper, batching and offline buffer | captain app |
+| `mobile/apps/rider` | Rider app: onboarding/OTP, home map, booking sheet, live trip, rating, trips, payment methods, account, support. The Wallet tab is post-MVP | — |
+| `mobile/apps/captain` | Captain app: sign-in, online toggle, offers, navigation hand-off, trip flow, earnings, history, account | — |
+| `mobile/packages/mashwar_core` | Domain models (`Trip`, `RideStatus` with `Expired`, `Money` in integer halalas, `MarketConfig`, `VehicleCategory`, …), ride status transition rules, `Result<T>`, error mapping; later (Phase 2/3) the API client, interceptors (auth, idempotency, language) and the realtime client | both apps |
+| `mobile/packages/mashwar_ui` | Design tokens, `ThemeData` and `ThemeExtension`s (status colours, radii, shadows), typography, shared widgets as they are built, ARB files (`app_ar.arb` default, `app_en.arb`) and formatters | both apps |
 
-Dependency rule: apps → feature code → packages; packages never import apps; `mashwar_models` depends on nothing app-specific.
+A captain-only location package (`mashwar_location`) can be added in Phase 2/3 if the background-location code grows beyond the captain app. A separate maps abstraction is kept as a folder inside `mashwar_ui` / the apps until a second provider is actually needed.
+
+Dependency rule: apps → feature code → packages; packages never import apps; `mashwar_core` has no Flutter UI dependency.
 
 ## 3. Layered architecture (per app) **[Decided — follows the Flutter architecture skill]**
 
@@ -82,7 +78,10 @@ final class Arrived    extends RideStatus { const Arrived({required this.arrived
 final class InProgress extends RideStatus { const InProgress({required this.startedAt}); /* ... */ }
 final class Completed  extends RideStatus { const Completed({required this.fare}); /* ... */ }
 final class Cancelled  extends RideStatus { const Cancelled({required this.by, this.fee}); /* ... */ }
+final class Expired    extends RideStatus { const Expired(); }  // terminal: no captain found (system)
 ```
+
+The allowed transitions mirror 04 §2 (including `accepted → requested` when the captain cancels, and `requested → expired`). They live in `mashwar_core` with unit tests so both apps and the backend's TypeScript state machine can be checked against the same table. Offer statuses are `pending`, `accepted`, `declined`, `expired`, `cancelled`.
 
 `TripRepository` applies server events only if `event.tripVersion > current.version`; on a version gap or reconnect it re-fetches `GET /v1/trips/{id}`. Exhaustive `switch` on the sealed class makes every sheet state explicit (matches `RideStatusTimeline` in the design system).
 
@@ -101,17 +100,17 @@ Long-lived objects (API client, `RealtimeClient`, repositories, location service
 ## 5. Routing **[Proposal]**
 
 - **`go_router`** with typed routes (`go_router_builder`).
-- `redirect` driven by an `AuthRepository` listenable: signed-out → onboarding/OTP; captain not approved → onboarding status screen; active trip → live trip screen (restored after app restart).
-- `StatefulShellRoute.indexedStack` for the four-tab bottom bar (Rider: Home, Trips, Wallet, Account; Captain: Home, Trips, Earnings, Account — `DESIGN_SYSTEM.md` §7), preserving each tab's stack.
+- `redirect` driven by an `AuthRepository` listenable: signed-out → onboarding/OTP; captain not approved → onboarding status screen; active trip → live trip screen (restored after app restart via `GET /v1/trips/active`).
+- `StatefulShellRoute.indexedStack` for the bottom bar (Rider: Home, Trips, Account, with Wallet post-MVP; Captain: Home, Trips, Earnings, Account — `DESIGN_SYSTEM.md` §7), preserving each tab's stack. In the MVP, saved cards are reached from Account / payment selection.
 - Deep links and push taps: `/trip/:id`, `/offer/:id` (captain), `/support/tickets/:id`, `/notifications`. Universal Links / App Links configured per flavor.
 - Back navigation and transitions are mirrored automatically under RTL.
 
 ## 6. Localisation and RTL **[Decided direction]**
 
-- `flutter_localizations` + `gen-l10n` (ARB) in `mashwar_l10n`; **Arabic is the default locale**; English selectable in-app and persisted, also sent to the backend as `preferred_lang` and in `Accept-Language`.
+- `flutter_localizations` + `gen-l10n` (ARB) in `mashwar_ui`; **Arabic is the default locale**; English selectable in-app and persisted, also sent to the backend as `preferred_lang` and in `Accept-Language`.
 - Layout direction comes from the locale (`Directionality` via `MaterialApp.locale`); widgets use `EdgeInsetsDirectional`, `AlignmentDirectional`, `PositionedDirectional`, `start/end` only — mirroring the prototype's logical CSS properties.
 - Directional icons (back, chevrons, send) mirror (`Icon` with `matchTextDirection` or `Directionality`-aware assets); the brand, maps, media and star ratings do **not** mirror (`DESIGN_SYSTEM.md` §9).
-- **Latin digits** for fares, times and distances in both languages (market setting in `market.ts`); formatters live in one place (`MoneyFormatter`, `DistanceFormatter`) and are tested in both locales. Phone numbers, plates, codes and IDs render inside an LTR `Directionality`/bidi isolate.
+- **Latin digits** for fares, times and distances in both languages (market setting in `prototype/src/config/market.ts`, served by `GET /v1/config` in production); formatters live in one place (`MoneyFormatter`, `DistanceFormatter`) and are tested in both locales. Phone numbers, plates, codes and IDs render inside an LTR `Directionality`/bidi isolate.
 - Fonts **IBM Plex Sans Arabic** and **Inter** bundled as assets (offline, no runtime font fetching), Arabic with line height ≈ 1.55 and no letter spacing.
 - Server-sourced labels (categories, zones, cancellation reasons) arrive with both `name_ar` and `name_en`.
 - Widget tests run each key screen in `ar` and `en`, and at large text scale.
@@ -143,7 +142,7 @@ Tokens are defined once in Dart; if the admin dashboard and apps must stay in sy
 | Pricing model | Per request / per map load | Per map load / MAU |
 | Data processing location | To review for PDPL | To review for PDPL |
 
-`mashwar_maps` exposes a provider-neutral `MashwarMap` widget (markers: pickup emerald dot, destination navy/gold pin, car with heading; route polyline with progress) so the choice can change without touching features. Car marker movement is interpolated between location updates (≈500 ms linear, as in the prototype). Routing, ETA and geocoding calls go through the **backend** where possible, so API keys with billing power are not embedded in the apps (map display keys are restricted by bundle ID / SHA-1).
+A small map folder (in the apps, or `mashwar_ui` once shared) exposes a provider-neutral `MashwarMap` widget (markers: pickup emerald dot, destination navy/gold pin, car with heading; route polyline with progress) so the choice can change without touching features. Car marker movement is interpolated between location updates (≈500 ms linear, as in the prototype). Routing, ETA and geocoding calls go through the **backend** where possible, so API keys with billing power are not embedded in the apps (map display keys are restricted by bundle ID / SHA-1).
 
 ## 9. Background location (captain app) **[Proposal]**
 
@@ -170,17 +169,17 @@ The **rider app** uses foreground "When In Use" location only, for pickup sugges
 ## 10. Push notifications **[Proposal]**
 
 - `firebase_messaging` (FCM for Android, FCM → APNs for iOS); token registered with `POST /v1/devices` and refreshed on change.
-- Android notification channels: `trip_offers` (high importance, custom sound, full-screen intent where allowed), `trip_updates`, `promotions` (opt-in), `account`.
-- Captain offers: delivered primarily over WebSocket while the app is foregrounded or the foreground service is running; FCM high-priority message as fallback. Data-only pushes are not guaranteed on iOS when the app is terminated, so offers also carry a visible notification.
+- Android notification channels: `trip_offers` (high importance, custom sound), `trip_updates`, `promotions` (opt-in), `account`.
+- Captain offers: delivered primarily over Socket.IO while the app is foregrounded or the foreground service is running; FCM high-priority message as fallback. Offers are shown as **high-priority heads-up notifications**, not full-screen intents: Android 14 restricts full-screen intents to calling and alarm apps (to verify against current Play policy). Data-only pushes are not guaranteed on iOS when the app is terminated, so offers also carry a visible notification.
 - Rider: accepted, arrived, receipt ready, support replies.
 - Push taps route through `go_router` deep links.
 - Devices without Google Play services (some Huawei models) — HMS Push support is **[Open]**.
 
-## 11. WebSocket client (`mashwar_realtime`)
+## 11. Realtime client (in `mashwar_core`, Phase 3)
 
-- Single connection per app session, owned by `RealtimeClient` service; repositories subscribe to typed streams (`Stream<TripEvent>`, `Stream<OfferEvent>`).
+- Single Socket.IO connection per app session, owned by a `RealtimeClient` service; repositories subscribe to typed streams (`Stream<TripEvent>`, `Stream<OfferEvent>`).
 - Reconnection with exponential backoff + jitter (e.g. 1 s → 30 s cap), triggered also by connectivity changes and app resume.
-- Before reconnecting, refresh the access token if near expiry; on `unauthorised`, run the refresh flow once, then sign out.
+- The server disconnects the socket when the access token expires (07 §4.3). The client then refreshes the token — **single-flight**: one refresh in flight, other callers wait for it — and reconnects with the fresh token. On a refresh failure it signs out.
 - After reconnect: re-join rooms (`trip:{id}`) and **resync** state over REST (`GET /v1/trips/{id}`, pending offer) — the socket is never assumed to have delivered every event.
 - Heartbeat / ping timeout detection; UI exposes a `ConnectionState` (connected, reconnecting, offline) shown as a non-blocking banner.
 - Events are de-duplicated by `eventId` and ordered by `tripVersion`.
@@ -194,19 +193,21 @@ The **rider app** uses foreground "When In Use" location only, for pickup sugges
 | No network at app start | Cached profile, market config and last trips shown; booking disabled with a clear message. |
 | Network drop during a live trip | Last known trip and captain position stay on screen with a "reconnecting" banner; state reconciled on reconnect. |
 | Offer arrives while connection is flaky | Countdown uses server `expiresAt` corrected by measured clock offset; accept returns `OFFER_EXPIRED` if too late, handled gracefully. |
-| Captain completes trip while offline | Action queued locally and replayed with the same idempotency key; UI shows "pending sync". |
+| Captain completes trip while offline | **Blocked**: the End trip action shows a "No connection — retry" message and is not queued. The server stamps `endedAt` when the command arrives, so the completion time and fare are server-authoritative. Retries use the same idempotency key. |
+| App killed or restarted (either app) | On launch the app calls `GET /v1/trips/active` and restores the live trip screen (04 §8a). |
 
 Local persistence: `flutter_secure_storage` (Keychain/Keystore) for tokens and device id; `drift` (SQLite) for caches and the captain location buffer; `shared_preferences` only for trivial settings (language, onboarding flags).
 
 ## 13. Folder structure
 
+Target structure. Items marked *(scaffolded)* exist after Phase 1; the rest is added in Phases 2–3.
+
 ```text
-mashwar_mobile/                     # or apps/ + packages/ inside the main monorepo (see 11)
-├── pubspec.yaml                    # pub workspace root
-├── melos.yaml
-├── analysis_options.yaml           # shared lints (flutter_lints / very_good_analysis)
+mobile/                             # inside the main repository (see 11)
+├── pubspec.yaml                    # pub workspace root (scaffolded)
+├── analysis_options.yaml           # shared lints (scaffolded)
 ├── apps/
-│   ├── rider/
+│   ├── rider/                      # created with `flutter create` (scaffolded)
 │   │   ├── lib/
 │   │   │   ├── main_dev.dart
 │   │   │   ├── main_staging.dart
@@ -216,7 +217,7 @@ mashwar_mobile/                     # or apps/ + packages/ inside the main monor
 │   │   │   │   ├── di.dart               # composition root (providers)
 │   │   │   │   └── router.dart           # go_router config, redirects, deep links
 │   │   │   ├── data/
-│   │   │   │   ├── models/               # app-specific API models (if any beyond mashwar_api)
+│   │   │   │   ├── models/               # app-specific API models (if any beyond mashwar_core)
 │   │   │   │   ├── repositories/         # auth, trip, quote, payment_method, coupon, support, notification
 │   │   │   │   └── services/             # app-specific services (e.g. psp_sdk_service)
 │   │   │   ├── domain/
@@ -231,40 +232,38 @@ mashwar_mobile/                     # or apps/ + packages/ inside the main monor
 │   │   │           ├── live_trip/    { view_models/, views/ }
 │   │   │           ├── rating/       { view_models/, views/ }
 │   │   │           ├── trips/        { view_models/, views/ }
-│   │   │           ├── wallet/       { view_models/, views/ }
+│   │   │           ├── payment_methods/ { view_models/, views/ }   # wallet is post-MVP
 │   │   │           ├── support/      { view_models/, views/ }
 │   │   │           └── account/      { view_models/, views/ }
 │   │   ├── test/                         # unit + widget tests mirror lib/
 │   │   ├── integration_test/
 │   │   ├── android/  (flavors: dev, staging, prod)
 │   │   └── ios/      (schemes/xcconfigs: dev, staging, prod)
-│   └── captain/
-│       └── lib/ ... same layout; features: sign_in, onboarding_kyc, home_online,
+│   └── captain/                    # created with `flutter create` (scaffolded)
+│       └── lib/ ... same layout; features: sign_in, home_online,
 │                  offer, trip_navigation, trip_flow, earnings, history, account, support
 └── packages/
-    ├── mashwar_core/
-    ├── mashwar_design_system/
-    │   └── lib/{tokens/, theme/, widgets/}
-    ├── mashwar_l10n/
-    │   └── lib/l10n/{app_ar.arb, app_en.arb}
-    ├── mashwar_models/
-    ├── mashwar_api/
-    │   └── lib/{generated/, services/, interceptors/}
-    ├── mashwar_realtime/
-    ├── mashwar_maps/
-    └── mashwar_location/
+    ├── mashwar_core/               # (scaffolded) ride status + transition rules, money in halalas, tests
+    │   └── lib/{models/, ride/, money/}   # api/ and realtime/ added in Phases 2–3
+    └── mashwar_ui/                 # (scaffolded) design tokens, theme, tests
+        └── lib/{tokens/, theme/, widgets/, l10n/}
 ```
 
-## 14. Testing
+Captain KYC document upload is not in the Phase 2 scope (see 11 §5); captains are approved by admin.
+
+## 14. Testing **[Proposal — technical, recommended]**
+
+Scoped to the contract budget:
 
 | Level | Scope | Tools |
 |---|---|---|
-| Unit | ViewModels (with fake repositories), repositories (with fake services), use cases, formatters (money/digits in ar and en), `RideStatus` event reconciliation, reconnection backoff | `flutter_test`, `mocktail` |
-| Widget | Each screen in `ar` (RTL) and `en`, large text scale, loading/error/empty states, sheet states per `RideStatus` | `flutter_test`; golden tests for design-system widgets (`alchemist` or similar) |
-| Integration | Full flows on emulators/simulators against a staging backend or a local mock server: OTP sign-in, request → accept → track → complete → rate; captain online → offer → accept → complete | `integration_test`; `patrol` candidate for native permission dialogs |
-| Contract | Generated `mashwar_api` client compiles against the published OpenAPI; WebSocket event fixtures shared with backend tests | CI |
-| Device / field | Background location on real Android (several OEMs) and iPhones, battery drain over a shift, poor-network drives in Riyadh | Manual test plan, internal builds |
-| Accessibility | Semantics labels, contrast (tokens are AA at specified sizes), touch targets ≥ 44, status never by colour alone | Widget tests + manual |
+| Unit | ViewModels (with fake repositories), repositories (with fake services), `mashwar_core` ride status transitions and money (halalas), formatters in ar and en, `tripVersion` event reconciliation | `flutter_test`, `mocktail` |
+| Widget (smoke) | Key screens render in `ar` (RTL) and `en` without errors; sheet states per `RideStatus` | `flutter_test` |
+| Integration | **One integration test per app**: rider request → accept → complete → rate; captain online → offer → accept → complete, against a local backend or mock server | `integration_test` |
+| Real-device matrix (Phase 4) | Both apps on a documented set of real iOS and Android devices (models and OS versions agreed with the client), including background location, offers with the app backgrounded, poor network, RTL | Manual test plan, TestFlight / Play internal testing builds |
+| Accessibility | Semantics labels, touch targets ≥ 44, status never by colour alone | Manual checks during the device matrix |
+
+Golden tests, contract tests against a published OpenAPI, field drives and multi-OEM battery testing are post-contract options.
 
 ## 15. Flavors and release process **[Proposal]**
 
@@ -275,11 +274,11 @@ mashwar_mobile/                     # or apps/ + packages/ inside the main monor
 | `prod` | production API | final ids (client to confirm) | prod | Store builds |
 
 - Configuration via `--flavor` + `--dart-define-from-file=env/<flavor>.json` (no secrets in the app; only public identifiers and endpoints).
-- CI builds (Codemagic, GitHub Actions + fastlane, or Bitrise — **[Open]**): analyse, test, build both apps per flavor, sign, upload.
-- Distribution: TestFlight and Google Play internal testing for staging; production via phased rollout (Play staged rollout, App Store phased release).
+- CI: GitHub Actions in the client-owned repository runs analyse and tests for the workspace. Signing and store upload are done in Phase 4 with the client's Apple Developer and Google Play accounts (Codemagic or fastlane automation is a post-contract option).
+- Distribution: TestFlight and Google Play internal testing for staging; Phase 4 publishes both apps to the App Store and Google Play **under the client's developer accounts**. The 45-day implementation-defect warranty starts after both apps are published.
 - Semantic versioning per app; build number from CI.
 - **Forced/soft update:** `GET /v1/config` returns `minSupportedVersion`; the app blocks or nudges accordingly (important because the API contract evolves).
-- Crash and performance reporting (Crashlytics or Sentry) with PII scrubbing.
+- Crash reporting with Sentry (same as backend and admin, 07 §10) with PII scrubbing.
 - Store listings, screenshots and privacy labels (App Store privacy details, Play Data safety, location disclosures) in Arabic and English.
 - Release checklist includes RTL visual check, background-location review notes, and permission strings in both languages.
 
@@ -291,9 +290,9 @@ mashwar_mobile/                     # or apps/ + packages/ inside the main monor
 | F2 | Maps provider (Google Maps vs Mapbox) after Riyadh address/POI test; in-app navigation or hand-off to external navigation apps. | Client / mobile lead |
 | F3 | Background location plugin (`geolocator` vs commercial `flutter_background_geolocation`). | Mobile lead after spike |
 | F4 | Huawei / non-GMS device support (HMS push and location). | Client |
-| F5 | Final app names, bundle ids, Apple/Google developer accounts owned by the client entity. | Client |
-| F6 | PSP mobile SDK (Apple Pay, mada, STC Pay) and in-app payment UX. | Client / backend |
-| F7 | Shared token source (JSON) for Flutter and admin dashboard, or Dart-only tokens. | Design / mobile lead |
+| F5 | Final app names and bundle ids. The Apple Developer and Google Play accounts are owned by the client entity (contract requirement); the client grants the delivery team scoped access. | Client |
+| F6 | PSP mobile SDK (required: mada, Apple Pay, cards; optional STC Pay / Google Pay) and in-app payment UX. | Client / backend |
+| F7 | Shared token source (JSON) for Flutter and admin dashboard, or Dart-only tokens in `mashwar_ui`. | Design / mobile lead |
 | F8 | Minimum OS versions (proposal: iOS 15+, Android 8.0 / API 26+, to validate with market device data). | Client / mobile lead |
 | F9 | In-app chat and calling in launch scope (affects realtime and permissions). | Product |
-| F10 | Mobile CI/CD service. | Tech lead |
+| F10 | Mobile build automation beyond GitHub Actions analyse/test (Codemagic, fastlane) — post-contract option. | Tech lead |

@@ -1,21 +1,21 @@
-name: Test and deploy prototype
+name: CI and prototype deploy
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  prototype:
+    name: Prototype (typecheck + Playwright)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,19 +27,94 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm --filter mashwar-prototype typecheck
+      - run: pnpm --filter mashwar-prototype exec playwright install --with-deps chromium
       - name: Playwright suite (flows, rules, screenshots)
-        run: pnpm test:e2e
+        run: pnpm --filter mashwar-prototype test:e2e
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results
-          path: e2e/.results/
+          path: prototype/e2e/.results/
           retention-days: 7
 
-  build:
-    needs: test
+  backend:
+    name: Backend (unit + PostgreSQL schema tests)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_DB: mashwar
+          POSTGRES_USER: mashwar
+          POSTGRES_PASSWORD: ci_only_password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U mashwar -d mashwar"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgres://mashwar:ci_only_password@localhost:5432/mashwar
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @mashwar/backend typecheck
+      - run: pnpm --filter @mashwar/backend test
+      - run: pnpm --filter @mashwar/backend build
+      - name: Migrations and schema invariants against PostGIS
+        run: pnpm --filter @mashwar/backend test:db
+
+  admin:
+    name: Admin shell (typecheck + test + build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @mashwar/admin typecheck
+      - run: pnpm --filter @mashwar/admin test
+      - run: pnpm --filter @mashwar/admin build
+
+  mobile:
+    name: Mobile (flutter analyze + tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.8
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: dart test
+        working-directory: mobile/packages/mashwar_core
+      - run: flutter test
+        working-directory: mobile/packages/mashwar_ui
+      - run: flutter test
+        working-directory: mobile/apps/rider
+      - run: flutter test
+        working-directory: mobile/apps/captain
+
+  pages-build:
+    name: Build prototype for GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [prototype]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53,17 +128,24 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Build for GitHub Pages
         # Pages serves the site at /<repo>/, so build with that base path.
-        run: pnpm build
+        run: pnpm --filter mashwar-prototype build
         env:
           BASE_PATH: /${{ github.event.repository.name }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: prototype/dist
 
-  deploy:
-    needs: build
+  pages-deploy:
+    name: Deploy prototype preview
+    needs: pages-build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: true
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

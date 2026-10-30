@@ -1,7 +1,7 @@
 # 01 — Approved Design Checklist
 
 **Status:** Draft for client review — Phase 1
-**Applies to:** React review prototype (this repository), Riyadh / Saudi Arabia market configuration
+**Applies to:** React review prototype (`prototype/` in this repository), Riyadh / Saudi Arabia market configuration
 **Purpose:** Record the client's sign-off, or requested changes, for every screen and cross-cutting design rule before production design and development start.
 
 ## How to use this checklist
@@ -11,6 +11,7 @@
 3. An item counts as approved only when **Approved** is ticked and **Notes** is empty or says "none".
 4. Approval covers **layout, content, flow and visual design only**. It does not approve the commercial values shown on screen (fares, fees, commission, coupons). Those are provisional, and the client approves them separately in `05-fare-and-fee-rules.md`.
 5. Anything labelled *simulated*, *demo* or *illustrative* in the prototype is approved as a **design** only. Production integrations are listed in `03-requirements-and-scope.md`.
+6. Client feedback on the prototype so far: "The design is good and I like it. Continue as agreed." This is recorded as approval of the **overall design direction** only. It does not tick any individual item below, and individual policies and values remain open.
 
 Legend: `[ ]` = not yet reviewed, `[x]` = ticked by the client.
 
@@ -71,7 +72,7 @@ Legend: `[ ]` = not yet reviewed, `[x]` = ticked by the client.
 | C4 | Home (offline) state and the "request waiting, go online" hint | Home tab, toggle off | [ ] | [ ] | |
 | C5 | Incoming request card: 30 s countdown bar, category, estimated net earnings, distance, pickup / destination, rider and payment, Decline / Accept | Home, when a ride is requested | [ ] | [ ] | |
 | C6 | Heading to pickup: turn banner, rider card, chat / call, pickup address, "I've arrived" | Active trip → accepted | [ ] | [ ] | |
-| C7 | Waiting for rider: Start trip | Active trip → arrived | [ ] | [ ] | No waiting timer is shown to the captain. See Notes or 03, open question. |
+| C7 | Waiting for rider: waiting meter (free minutes, then accruing waiting fee), Start trip | Active trip → arrived | [ ] | [ ] | The captain sees a waiting meter (`prototype/src/Driver.tsx`, `WaitingMeter`). Fee values are provisional. |
 | C8 | Trip in progress: elapsed time, progress, fare, destination, End trip with confirmation | Active trip → in progress | [ ] | [ ] | |
 | C9 | Trip completed: net earnings, fare, platform fee %, distance, payment ("Cash — collect fare"), rider-rating status | Active trip → completed | [ ] | [ ] | Commission % is provisional. |
 | C10 | Earnings: Today / Week / Month, total, chart, rides / hours / average, available payout and Payout button, recent trips | Earnings tab | [ ] | [ ] | |
@@ -100,7 +101,7 @@ Legend: `[ ]` = not yet reviewed, `[x]` = ticked by the client.
 | D10 | Ratings: all / low filter, rating cards | Ratings | [ ] | [ ] | |
 | D11 | Support: status filter, ticket table, ticket drawer (message, internal note, start review, resolve) | Support | [ ] | [ ] | Internal notes are not saved in the prototype. |
 | D12 | Reports: weekly / monthly, KPI cards, completed vs cancelled, revenue, popular locations, category usage, rating distribution, Export | Reports | [ ] | [ ] | Datasets are illustrative. |
-| D13 | Settings (pricing): base / per km / per min / minimum fare, category multipliers, service areas, sample fare preview, save / discard | Settings | [ ] | [ ] | Waiting fees, cancellation fees and commission are not editable here yet. See 03. |
+| D13 | Settings (pricing): base / per km / per min / minimum fare, category multipliers, waiting and cancellation fees, service areas, sample fare preview, save / discard | Settings | [ ] | [ ] | Waiting and cancellation fees are editable. Commission is read-only and labelled "Provisional, not approved". All values are provisional (see 05). |
 
 ## E. Cross-cutting design rules
 

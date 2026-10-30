@@ -1,6 +1,6 @@
 # MASHWAR Design System
 
-These specs are written to be shared by the React prototype and the future Flutter apps.
+These specs are written to be shared by the React prototype and the Flutter apps. File paths such as `src/index.css` refer to the prototype (`prototype/src/...`). The Flutter tokens live in `mobile/packages/mashwar_ui/lib/src/tokens.dart` and must stay in sync with section 1.
 Values are given as both Tailwind tokens and plain hex or logical pixels (1 rem = 16 lp).
 
 ## 1. Color tokens (`src/index.css` → `@theme`)

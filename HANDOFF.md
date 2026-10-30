@@ -1,5 +1,7 @@
 # MASHWAR — Developer Handoff
 
+> This handoff covers the React prototype in `prototype/`. Paths below are relative to that folder. The production foundation (backend, admin shell, Flutter apps, database) is described in the root [README](README.md) and [docs/phase1/11](docs/phase1/11-project-structure-and-roadmap.md).
+
 An interactive **prototype** of a Saudi ride-hailing platform with three connected experiences: the passenger app, the captain app and the admin dashboard.
 It runs on React 19, TypeScript, Vite 8, Tailwind CSS v4, Recharts and Lucide.
 All data is simulated in the browser. There is no backend and no API keys or secrets.
@@ -52,7 +54,8 @@ Page title, language and meta tags are set in `index.html`; `public/robots.txt` 
 ## 3. Run and build
 
 ```bash
-pnpm install          # Node and pnpm versions are pinned in .mise.toml
+pnpm install          # from the repository root (pnpm workspace)
+cd prototype
 pnpm dev              # Vite dev server (default port 8443, or $PORT)
 pnpm typecheck        # tsc --noEmit
 pnpm build            # production build into dist/

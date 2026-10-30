@@ -14,8 +14,26 @@ logs/
 *.log
 
 # Playwright
-/e2e/.results/
-/playwright-report/
+**/e2e/.results/
+**/playwright-report/
 
 # Local tooling
 .tmp-*
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+*.iml
+.idea/
+mobile/**/ios/Pods/
+mobile/**/ios/.symlinks/
+mobile/**/android/.gradle/
+mobile/**/android/local.properties
+mobile/**/android/key.properties
+*.jks
+*.keystore
+
+# Backend
+backend/coverage/

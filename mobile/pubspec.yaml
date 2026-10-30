@@ -1,0 +1,12 @@
+# Dart pub workspace for the MASHWAR mobile apps (docs/phase1/08-flutter-architecture.md).
+name: mashwar_workspace
+publish_to: none
+environment:
+  sdk: ^3.12.2
+workspace:
+  - apps/rider
+  - apps/captain
+  - packages/mashwar_core
+  - packages/mashwar_ui
+dev_dependencies:
+  flutter_lints: ^6.0.0

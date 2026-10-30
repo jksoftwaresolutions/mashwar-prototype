@@ -1,13 +1,22 @@
 # 05 — Fare and Fee Rules
 
 **Status:** Draft for client review — Phase 1
-**Source:** `src/config/market.ts` (`MARKETS.SA.pricing`, `commission`, `waitingFee`, `cancellationFee`, `captainNet`), `src/store.tsx` (`calcFare`, `estimate`, `tripTotal`, coupon discount)
+**Source:** `prototype/src/config/market.ts` (`MARKETS.SA.pricing`, `commission`, `waitingFee`, `cancellationFee`, `captainNet`), `prototype/src/store.tsx` (`calcFare`, `estimate`, `tripTotal`, coupon discount)
 
 > ## ⚠ All commercial values are PROVISIONAL
 >
 > Every fare, fee, multiplier, coupon value and the **20 % platform commission** in this document and in the prototype is a **demo placeholder**. **None of them has been approved by the client.** `market.ts` marks them as `commission.status = 'provisional'` and `pricingStatus = 'provisional'`. They must not be used for launch, contracts, captain communications or marketing until the client signs off section 8.
 
 This document records the formulas **exactly as the prototype implements them**, so that the client can approve or change both the formulas and the values. In production the same rules run **only on the server**.
+
+## 0. Money representation
+
+**[Proposal — technical, recommended]**
+
+- **Production** stores and computes every amount as an **integer number of halalas** (1 SAR = 100 halalas), in `bigint` columns and integer arithmetic. No floating-point type is used for money.
+- **Rates stay decimal** (for example `perKm = 1.55 SAR`, `commission = 0.20`). A rate is multiplied in exact decimal arithmetic and the result is converted to halalas once.
+- **Each fee line is rounded to halalas exactly once**, by one documented rule, **before** lines are summed (fare, discount, waiting fee, cancellation fee, commission, VAT). The proposed rule is **half-up**; the rounding mode and whether fares are displayed in whole SAR remain open decision **D10**.
+- **The prototype** uses JavaScript floating-point numbers and displays whole SAR (with decimals only when a value is fractional). This is acceptable for a demo only and is not the production rule.
 
 ---
 
@@ -29,7 +38,8 @@ discount = min( maxOff, round( fare × pct / 100 ) )
 ```
 
 - Applied to the trip `fare` only. It is **not** applied to waiting or cancellation fees.
-- Validity in the prototype: the code exists, `active = true` and `uses < limit` and the expiry date is today or later (G6, fixed in this build).
+- Validity in the prototype: the code exists, `active = true` and `uses < limit` and the expiry date is today or later (G6, fixed in this build). There is no per-user limit.
+- **Production:** the discount is **recomputed on the final fare** at settlement (not taken from the quote), and is still capped by `maxOff`. If the final fare equals the locked quote (D12), the result is the same as at request time.
 - The rider total can fall below `minFare` after a discount. A decision is needed (section 8).
 
 ## 3. Waiting fee
@@ -68,6 +78,32 @@ platformFee = riderTotal − captainNet
 - Commission is applied to the **rider-paid total after the discount**. This means the captain shares the cost of every coupon. It is a provisional modelling choice, and the client must confirm or change it.
 - `captainNet` rounds per trip to whole SAR, so the effective commission on a single trip can differ from the nominal rate (see the worked example).
 - The admin Payments page computes commission on the **sum** of all trips (one rounding), so its totals can differ slightly from the sum of per-trip captain earnings.
+- Whether commission also applies to the waiting fee and to cancellation fees is open decision **D19**. Who bears the PSP / card-scheme processing fee (MDR) is open decision **D20**.
+
+## 5a. VAT placement (placeholder, open decision D5)
+
+> **Open — pending the client's tax advisor.** Nothing in this section is approved, and no VAT is shown or calculated in the prototype. The 15 % rate used below is the current Saudi standard rate as generally published (to verify with the tax advisor). The section only **defines where VAT would apply** so that the data model and invoices can support either answer.
+
+Where VAT would be calculated, if the tax advisor confirms it applies:
+
+| Charge | Invoiced to | VAT applies? | Notes |
+|---|---|---|---|
+| Rider trip total (fare − discount + waiting fee) | Rider | To verify | Depends on who is the supplier of transport (platform or captain) |
+| Platform commission | Captain | To verify | Invoiced by the platform to the captain |
+| Cancellation / no-show fee | Rider | To verify | One invoice per fee |
+
+Rounding rule (proposed): VAT is computed **once per invoice** on the invoice's taxable amount and rounded to halalas half-up (D10).
+
+**Worked example (illustrative, demo values, 15 % to verify), in halalas**
+
+| Case | Taxable base | VAT | Total charged |
+|---|---|---|---|
+| Rider total 3,450 (34.50 SAR), **VAT-inclusive** display | 3,450 ÷ 1.15 = 3,000 | 450 | 3,450 |
+| Rider total 3,450 (34.50 SAR), **VAT-exclusive** display | 3,450 | 517.5 → **518** | 3,968 |
+| Commission 650 (6.50 SAR), inclusive | 650 ÷ 1.15 = 565.2 → **565** | 85 | 650 |
+| Commission 650 (6.50 SAR), exclusive | 650 | 97.5 → **98** | 748 |
+| Cancellation fee 1,000 (10 SAR), inclusive | 1,000 ÷ 1.15 = 869.6 → **870** | 130 | 1,000 |
+| Cancellation fee 1,000 (10 SAR), exclusive | 1,000 | **150** | 1,150 |
 
 ---
 
@@ -130,7 +166,9 @@ Vehicle categories: Economy (4 seats), Comfort (4 seats), Family (7 seats). The 
 | Rider cancels 2 min 10 s after acceptance, captain still en route | 5 SAR |
 | Rider cancels after the captain has arrived (any waiting time) | 10 SAR |
 
-VAT is **not** shown or calculated anywhere in the prototype.
+VAT is **not** shown or calculated anywhere in the prototype. See §5a for where it would apply.
+
+The amounts above follow the prototype (SAR, floating point). In production the same example is computed in halalas with one rounding per line (§0): fare 3,900, discount 585, waiting fee 150, rider total 3,465 (34.65 SAR). If the discount keeps the prototype's whole-SAR rounding (600), the total is 3,450. Which applies is decision D10.
 
 ---
 
@@ -143,19 +181,21 @@ VAT is **not** shown or calculated anywhere in the prototype.
 | D3 | **All fare parameters** | Base, per km, per min, minimum, multipliers per category, per city / zone | Demo values in section 6 |
 | D4 | **Surge / dynamic pricing** | None at launch · capped multiplier by zone and time · scheduled peak pricing. If used: cap, transparency rules, regulatory check | None |
 | D5 | **VAT treatment** | Prices VAT-inclusive or exclusive. VAT on fare, waiting fee, cancellation fee and commission. Who is the supplier of transport (platform or captain). Invoice issuer. *Must be confirmed with a tax advisor* | VAT not modelled |
-| D6 | **Waiting fee** | Free minutes, rate, per started minute or per second, cap, whether the captain sees a timer | 3 free min, 0.5 SAR per started min, no cap, no captain timer |
+| D6 | **Waiting fee** | Free minutes, rate, per started minute or per second, cap, whether the captain sees a timer | 3 free min, 0.5 SAR per started min, no cap. The captain sees a waiting meter |
 | D7 | **Rider cancellation fees** | Grace length, fee after grace, fee after arrival. Whether the arrival fee waits until the free waiting ends. Who receives the fee (captain share) | 2 min grace, 5 SAR, 10 SAR immediately on arrival. No captain share defined |
 | D8 | **Rider no-show fee** | Threshold (minutes after arrival), fee amount, captain compensation | Not implemented |
 | D9 | **Captain no-show / late cancellation** | Penalty, acceptance-rate impact, rider credit | Not implemented |
-| D10 | **Rounding** | Whole SAR vs 2 decimals for fares and fees. Rounding mode (half-up, bankers'). Round per line or on the total. Captain-net rounding (favour the captain?) | Whole-SAR fare; fractional waiting fee; captain net rounded half-up per trip |
+| D10 | **Rounding** | Whole SAR vs halala precision for displayed fares and fees. Rounding mode (half-up proposed, bankers'). Captain-net rounding (favour the captain?). Production rounds each line to halalas once before summing (§0) | Whole-SAR fare; fractional waiting fee; captain net rounded half-up per trip (JavaScript floats) |
 | D11 | **Minimum fare vs discounts** | Allow the total below the minimum, or floor the rider total at the minimum | Total can fall below the minimum |
 | D12 | **Final fare basis** | Locked upfront quote · recalculate from the actual route / time · upfront with a deviation threshold (for example ±20 %) | Locked at request |
 | D13 | **Airport fees** | Pickup / drop-off surcharge at KKIA (and other airports). Airport zone rules. Pass-through of any airport access charges | None. The airport is only a service-area toggle |
 | D14 | **Tolls and parking** | Pass-through to the rider, included in the fare, or not applicable in the launch city | None |
 | D15 | **Booking / service fee** | Fixed per-trip platform fee to the rider, separate from the fare | None |
 | D16 | **Category multipliers vs separate rate cards** | Keep one formula with multipliers, or separate base / km / min per category | One formula with multipliers |
-| D17 | **Coupon rules** | Expiry enforcement, per-user limits, first-ride only, minimum fare, budget caps, stacking | %, cap and total limit only. No expiry check |
+| D17 | **Coupon rules** | Expiry enforcement, per-user limits, first-ride only, minimum fare, budget caps, stacking | %, cap, total limit and expiry (checked; fixed at 90 days after creation). No per-user limit |
 | D18 | **Cash trips** | Same prices as card? Rounding of cash totals to convenient amounts? | Same prices |
+| D19 | **Commission base per fee type** | Commission on the waiting fee: yes / no. Commission on cancellation and no-show fees: yes / no / different rate | Commission on the whole rider total, including the waiting fee. Captain share of cancellation fees not defined (D7) |
+| D20 | **Who bears PSP / MDR gateway fees** | Platform absorbs · deducted from the captain's share · passed to the rider (regulatory check needed). See 10 | Not modelled |
 
 **Approval record**
 
@@ -166,4 +206,6 @@ VAT is **not** shown or calculated anywhere in the prototype.
 | D5 VAT treatment | | | |
 | D6–D9 Waiting, cancellation, no-show | | | |
 | D10 Rounding | | | |
+| D19 Commission base per fee type | | | |
+| D20 PSP / MDR fees | | | |
 | Others | | | |

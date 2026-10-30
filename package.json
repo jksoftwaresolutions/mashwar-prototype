@@ -1,33 +1,20 @@
 {
-  "name": "mashwar-prototype",
+  "name": "mashwar",
   "private": true,
-  "version": "1.0.0",
-  "type": "module",
+  "description": "MASHWAR ride-hailing platform monorepo: prototype, backend, admin, mobile (Dart workspace)",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "typecheck": "tsc --noEmit -p .",
-    "check": "tsc --noEmit -p . && vite build",
-    "preview": "vite preview",
-    "format": "oxfmt",
-    "test:e2e": "playwright test"
+    "prototype:dev": "pnpm --filter mashwar-prototype dev",
+    "prototype:check": "pnpm --filter mashwar-prototype check",
+    "prototype:e2e": "pnpm --filter mashwar-prototype test:e2e",
+    "backend:dev": "pnpm --filter @mashwar/backend start:dev",
+    "backend:test": "pnpm --filter @mashwar/backend test",
+    "db:up": "docker compose -f infra/docker-compose.yml up -d",
+    "db:down": "docker compose -f infra/docker-compose.yml down",
+    "db:migrate": "pnpm --filter @mashwar/backend db:migrate",
+    "admin:dev": "pnpm --filter @mashwar/admin dev",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
   },
-  "dependencies": {
-    "lucide-react": "^1.55.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "recharts": "^3.10.1"
-  },
-  "devDependencies": {
-    "@playwright/test": "1.56.1",
-    "@tailwindcss/vite": "^4.0.0",
-    "@types/node": "^22.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^6.0.0",
-    "oxfmt": "^0.2.0",
-    "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.0",
-    "vite": "^8.0.5"
-  }
+  "packageManager": "pnpm@10.34.3",
+  "engines": { "node": ">=22" }
 }

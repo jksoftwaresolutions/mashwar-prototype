@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="512" height="512">
+  <title>MASHWAR mark on light background (working name, not final)</title>
+  <rect width="32" height="32" rx="7" fill="#FFFFFF"/>
+  <g transform="translate(6.08 6.08) scale(0.62)">
+    <path d="M6 24 C6 12, 13 8, 16 16 C19 24, 26 20, 26 8" fill="none" stroke="#0FAF92" stroke-width="3.4" stroke-linecap="round"/>
+    <circle cx="26" cy="8" r="3" fill="#D7A867"/>
+    <circle cx="6" cy="24" r="2.4" fill="#101B2E"/>
+  </g>
+</svg>

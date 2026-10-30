@@ -1,9 +1,11 @@
 # 09 — Country Expansion Strategy
 
 **Status:** Draft for client review — Phase 1
-**Source:** `src/config/market.ts` (`MarketConfig`, `MARKETS`, `ACTIVE_MARKET_ID`)
+**Source:** `prototype/src/config/market.ts` (`MarketConfig`, `MARKETS`, `ACTIVE_MARKET_ID`)
 
 > **Only Saudi Arabia exists.** The prototype contains exactly one market (`SA`, Riyadh). **Multi-country and multi-city operation is NOT a working capability**, in the prototype or anywhere else. This document describes how the configuration is structured so that expansion is possible later, and what must be built before any second market can launch. No other country should be presented as supported.
+>
+> The client requirement "country-expansion readiness" is met in the contract by the *market → city → zone* data model (06 §5.1), integer minor-unit money and server-side configuration — not by a working second market.
 
 ---
 
@@ -16,7 +18,7 @@ All country-specific values in the prototype are read from one `MarketConfig` ob
 | `id` | `SA` | Market key |
 | `country` | `{ iso2: 'SA', nameAr, nameEn }` | Display, legal entity mapping |
 | `city` | `{ id: 'riyadh', nameAr, nameEn, timezone: 'Asia/Riyadh' }` | **One** city per market (limitation) |
-| `currency` | `{ code: 'SAR', symbolAr: 'ر.س', symbolEn: 'SAR', decimals: 0 }` | Money formatting |
+| `currency` | `{ code: 'SAR', symbolAr: 'ر.س', symbolEn: 'SAR', decimals: 0 }` | Money **display** formatting only (whole SAR). The prototype computes in JavaScript floats; production stores integer halalas (05 §0) |
 | `locale` | `ar: 'ar-SA-u-nu-latn-ca-gregory'`, `en: 'en-GB'` | Dates and numbers, Latin digits |
 | `defaultLang` | `ar` | First-launch language and direction |
 | `callingCode`, `phoneDigits`, `phonePlaceholder` | `+966`, 9, `5X XXX XXXX` | Phone entry and validation |
@@ -48,7 +50,7 @@ Market (country)
 | Pricing | One rate card per market | Rate card per city / zone / category / time band. Versioned so historic trips keep their original rules |
 | Service areas | Name + on / off toggle with no effect | Polygons. Pickup validation. Drop-off-outside-area rules |
 | Categories | Fixed union type `'economy' \| 'comfort' \| 'family'` | Data-driven catalogue per city (IDs, names AR / EN, seats, vehicle eligibility rules) |
-| Currency | Single currency, integer display | ISO 4217 code, minor units, rounding rules per market (amounts stored as integer minor units) |
+| Currency | Single currency, whole-SAR display, floating-point arithmetic | ISO 4217 code; all amounts stored and computed as **integer minor units** (halalas for SAR, 1 SAR = 100); the minor-unit exponent, display precision and rounding rule (05 D10) are per currency / market |
 | Time | One timezone | Store UTC. Render in the city timezone. Reports per city local day |
 | Phone | Single calling code and length | E.164 validation library. Multiple allowed prefixes |
 | Language | `ar` / `en` inline strings | i18n dictionaries. Additional locales per market (for example `ar-EG`, `ur`, `hi` for captains if needed) |
@@ -79,7 +81,7 @@ For each candidate country the client needs a **market-entry assessment** coveri
 |---|---|---|
 | 1 | Backend market / city / zone / rate-card model with admin UI and approval workflow | [X] |
 | 2 | Market resolution from rider location and captain registration city | [X] |
-| 3 | Money as integer minor units with per-currency rounding | [X] |
+| 3 | Money as integer minor units with per-currency exponent and rounding | Contract scope: SAR in integer halalas (05 §0; `mashwar_core` and the database use halalas). Other currencies [X] |
 | 4 | i18n dictionaries, locale fallback, translation workflow | [X] (prototype uses inline pairs) |
 | 5 | Per-market payment-provider routing (PSP adapter interface) | [X] |
 | 6 | Per-market tax / invoicing adapters (ZATCA for KSA; others per country) | [X] |

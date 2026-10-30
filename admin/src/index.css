@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+
+/* Same tokens as the prototype (DESIGN_SYSTEM.md section 1). */
+@theme {
+  --color-navy: #101b2e;
+  --color-emerald: #0faf92;
+  --color-bg: #f6f8fb;
+  --color-ink: #182335;
+  --color-muted: #718096;
+  --color-line: #e7ebf1;
+  --font-sans: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif;
+}
+
+@layer base {
+  body { background: var(--color-bg); color: var(--color-ink); font-family: var(--font-sans); }
+  button, input { font: inherit; }
+  :focus-visible { outline: 3px solid color-mix(in srgb, var(--color-emerald) 35%, transparent); outline-offset: 2px; }
+}
