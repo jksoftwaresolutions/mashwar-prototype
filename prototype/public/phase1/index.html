@@ -158,10 +158,11 @@ figcaption span { color: var(--muted); font-size: 14px; line-height: 1.6; displa
 .plan .now { border-color: var(--emerald); box-shadow: inset 4px 0 0 var(--emerald); }
 .pill { display: inline-block; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 1px 10px; margin-top: 4px; }
 .pill.ok { background: var(--tint); color: var(--emerald-d); }
-.pill.next { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.pill.soon { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
 
 /* Decisions */
-.ask { display: grid; gap: 12px; counter-reset: q; }
+.ask { display: grid; gap: 12px; }
+#decisions { counter-reset: q; }
 .q { counter-increment: q; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 4px 14px; }
 .q::before { content: counter(q); grid-row: span 3; width: 34px; height: 34px; border-radius: 10px; background: var(--navy); color: #fff; font-weight: 700; display: grid; place-items: center; }
 .q h3 { font-size: 17px; }
@@ -175,6 +176,17 @@ figcaption span { color: var(--muted); font-size: 14px; line-height: 1.6; displa
 .later ul { margin: 0; padding-inline-start: 20px; color: var(--muted); font-size: 15px; display: grid; gap: 4px; }
 .later li b { color: var(--ink); }
 
+.q .rec .tag { display: block; width: fit-content; font-size: 12px; font-weight: 600; color: var(--ink); background: var(--gold-tint); border-radius: 999px; padding: 1px 10px; margin-bottom: 4px; }
+.ask + .who { margin-top: 28px; }
+
+/* What works today */
+.now4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.now4 > div { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.now4 b { font-size: 16px; }
+.now4 p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+.now4 .pill { margin: 0; width: fit-content; }
+.caveat { margin-top: 14px; font-size: 15px; font-weight: 600; border-inline-start: 3px solid var(--gold); padding: 4px 12px; }
+
 /* Next steps */
 .next { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .next div { background: var(--navy); color: #fff; border-radius: 20px; padding: 22px; display: grid; gap: 8px; align-content: start; min-width: 0; }
@@ -185,8 +197,11 @@ figcaption span { color: var(--muted); font-size: 14px; line-height: 1.6; displa
 footer { margin-top: 64px; border-top: 1px solid var(--line); }
 footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
 
+@media (max-width: 960px) {
+  .now4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 760px) {
-  .done, .explain, .rules, .next { grid-template-columns: minmax(0, 1fr); }
+  .done, .explain, .rules, .next, .now4 { grid-template-columns: minmax(0, 1fr); }
   .screens { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 62%; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
   .screens figure { scroll-snap-align: start; }
   .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -230,15 +245,15 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
       <div class="done">
         <article>
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M11 18h2"/></svg>نموذج تفاعلي للتصميم</h3>
-          <p>تطبيق الراكب وتطبيق الكابتن ولوحة الإدارة، بالعربية والإنجليزية. يمكنكم تجربة رحلة كاملة من الطلب حتى التقييم. وافقتم على الاتجاه العام للتصميم، ونحتاج الآن إقراركم للشاشات.</p>
+          <p>تطبيق الراكب وتطبيق الكابتن ولوحة الإدارة، بالعربية والإنجليزية. يمكنكم تجربة رحلة كاملة من الطلب حتى التقييم، وهي محاكاة للعرض فقط. وافقتم على الاتجاه العام للتصميم، ونحتاج الآن إقراركم للشاشات.</p>
         </article>
         <article>
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>قواعد العمل مكتوبة</h3>
           <p>نطاق المشروع، ومراحل الرحلة من الطلب حتى الإلغاء، وقواعد الأسعار والانتظار والإلغاء والعمولة، وخطة الدفع عبر مدى وApple Pay والبطاقات والنقد.</p>
         </article>
         <article>
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>الأساس التقني جاهز</h3>
-          <p>أنشأنا مشروعَي التطبيقين للراكب والكابتن، والخادم، وقاعدة البيانات، وهيكل لوحة الإدارة. هذا ليس تصميماً على الورق فقط، فالأساس يعمل ومختبر.</p>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>الأساس التقني منفّذ</h3>
+          <p>أنشأنا مشروعَي التطبيقين للراكب والكابتن، والخادم، وقاعدة البيانات، وهيكل لوحة الإدارة، وهي تعمل ومختبرة. لا يشمل الأساس بعد تسجيل الدخول أو الخرائط أو الدفع، فهذه تُبنى في المرحلتين الثانية والثالثة.</p>
         </article>
         <article>
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>فحص تلقائي مع كل تعديل</h3>
@@ -272,7 +287,7 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
       <div class="screens">
         <figure><div class="phone"><img src="img/rider-home.png" alt="الشاشة الرئيسية لتطبيق الراكب" loading="lazy"></div><figcaption><b>الصفحة الرئيسية</b><span>يختار الراكب وجهته أو أحد الأماكن المحفوظة.</span></figcaption></figure>
         <figure><div class="phone"><img src="img/rider-select.png" alt="اختيار فئة الرحلة مع الأسعار التقديرية" loading="lazy"></div><figcaption><b>اختيار الفئة</b><span>اقتصادي ومريح وعائلي، مع السعر التقديري ووقت الوصول.</span></figcaption></figure>
-        <figure><div class="phone"><img src="img/rider-searching.png" alt="البحث عن كابتن قريب" loading="lazy"></div><figcaption><b>البحث عن كابتن</b><span>يُرسل الطلب لأقرب الكباتن، ويمكن الإلغاء مجاناً أثناء البحث.</span></figcaption></figure>
+        <figure><div class="phone"><img src="img/rider-searching.png" alt="البحث عن كابتن قريب" loading="lazy"></div><figcaption><b>البحث عن كابتن</b><span>يُرسل الطلب لأقرب الكباتن، ويمكن للراكب الإلغاء أثناء البحث.</span></figcaption></figure>
       </div>
 
       <p class="who">الكابتن</p>
@@ -285,13 +300,28 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
       <p class="who">لوحة الإدارة</p>
       <figure class="wide">
         <div class="frame"><img src="img/admin-desktop.png" alt="لوحة الإدارة: نظرة عامة على أداء المنصة" loading="lazy"></div>
-        <figcaption><b>نظرة عامة على التشغيل</b><span>تضم اثني عشر قسماً: الرحلات، والرحلات المباشرة، والكباتن، والركاب، والمركبات، والمدفوعات، والعروض، والتقييمات، والدعم، والتقارير، والإعدادات. كل موظف يرى الأقسام المسموح له بها فقط.</span></figcaption>
+        <figcaption><b>نظرة عامة على التشغيل</b><span>تضم اثني عشر قسماً: النظرة العامة، والرحلات، والرحلات المباشرة، والكباتن، والركاب، والمركبات، والمدفوعات، والعروض، والتقييمات، والدعم، والتقارير، والإعدادات. كل موظف يرى الأقسام المسموح له بها فقط.</span></figcaption>
       </figure>
 
       <div class="note">
         <b>ما هو تجريبي في النموذج</b>
-        <p>الخريطة مرسومة للعرض، والدفع والرسائل محاكاة (رمز التحقق التجريبي <span class="num ltr">1234</span>)، والأرقام والأسماء بيانات وهمية. الأسعار ونسبة العمولة (<span class="num">20%</span>) قيم مبدئية لم تُعتمد. تُبنى الخرائط والرسائل الحقيقية في المرحلة الثانية، والدفع في المرحلة الثالثة.</p>
+        <p>الخريطة مرسومة للعرض، والدفع والرسائل محاكاة (رمز التحقق التجريبي <span class="num ltr">1234</span>)، والأرقام والأسماء بيانات وهمية. الأسعار ونسبة العمولة (<span class="num">20%</span>) ورسوم الانتظار والإلغاء قيم مبدئية لم تُعتمد. تُبنى الخرائط والرسائل الحقيقية في المرحلة الثانية، والدفع في المرحلة الثالثة.</p>
       </div>
+    </div>
+  </section>
+
+  <section id="status">
+    <div class="wrap">
+      <p class="eyebrow">الوضع الحالي</p>
+      <h2>ما الذي يعمل اليوم، وما الذي يأتي لاحقاً</h2>
+      <p class="intro">حتى لا يختلط النموذج التفاعلي بالتطبيق الفعلي، هذا تقسيم واضح لكل جزء:</p>
+      <div class="now4">
+        <div><span class="pill ok">يعمل الآن للعرض</span><b>النموذج التفاعلي</b><p>التنقل بين كل الشاشات، ورحلة كاملة بين الراكب والكابتن، ولوحة الإدارة، والعربية والإنجليزية. كل ذلك محاكاة ببيانات وهمية داخل المتصفح.</p></div>
+        <div><span class="pill ok">منفّذ ومختبر</span><b>الأساس التقني</b><p>مشروعا التطبيقين، وهيكل الخادم، وقاعدة البيانات بجداولها، وصلاحيات الموظفين، وقواعد الانتقال بين مراحل الرحلة.</p></div>
+        <div><span class="pill soon">موثّق ومصمم فقط</span><b>الخدمات الفعلية</b><p>تسجيل الدخول برمز الجوال، وتحديد الموقع والتتبع المباشر، والإشعارات، والدفع الإلكتروني، ولوحة الإدارة المتصلة بالبيانات الحقيقية.</p></div>
+        <div><span class="pill soon">في المراحل التالية</span><b>البناء والإطلاق</b><p>المرحلة الثانية: التطبيقان والحجز والخرائط. المرحلة الثالثة: التتبع والإشعارات والإدارة والدفع التجريبي. المرحلة الرابعة: الاختبار والنشر في المتاجر.</p></div>
+      </div>
+      <p class="caveat">لا يوجد حتى الآن في أي جزء من المشروع تحديد موقع حقيقي عبر GPS، ولا دفع إلكتروني، ولا رسائل رمز تحقق فعلية، ولا تتبع مباشر، ولا تسجيل دخول جاهز للتشغيل الفعلي.</p>
     </div>
   </section>
 
@@ -299,7 +329,7 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
     <div class="wrap">
       <p class="eyebrow">طريقة العمل</p>
       <h2>كيف يعمل النظام</h2>
-      <p class="intro">ثلاث واجهات يستخدمها الناس، وخادم واحد هو المرجع لكل القرارات، وقاعدة بيانات تحفظ كل شيء. الخدمات الخارجية تُربط في المراحل القادمة بحسابات باسم شركتكم.</p>
+      <p class="intro">يوضح المخطط التصميم المقترح للنظام الكامل: ثلاث واجهات يستخدمها الناس، وخادم واحد هو المرجع لكل القرارات، وقاعدة بيانات تحفظ كل شيء. المنفّذ منه الآن هو الأساس فقط، أما الخدمات الخارجية فتُربط في المراحل القادمة بحسابات باسم شركتكم.</p>
       <div class="diagram" role="img" aria-label="مخطط النظام: تطبيق الراكب وتطبيق الكابتن ولوحة الإدارة تتصل بالخادم، والخادم يتصل بقاعدة البيانات وبخدمات الخرائط والرسائل والدفع">
         <svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg">
           <!-- connectors: apps (right) to server (centre) -->
@@ -346,13 +376,13 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
           <rect class="d-tag" x="150" y="248" width="72" height="22" rx="11"/>
           <text class="d-tagt" x="186" y="263" text-anchor="middle">المرحلة 3</text>
           <rect class="d-tag" x="150" y="128" width="72" height="22" rx="11"/>
-          <text class="d-tagt" x="186" y="143" text-anchor="middle">جاهزة الآن</text>
+          <text class="d-tagt" x="186" y="143" text-anchor="middle">منفّذة الآن</text>
         </svg>
       </div>
       <div class="explain">
-        <div><b>القرار في الخادم دائماً</b><p>السعر والعمولة وقبول الرحلة يحسبها الخادم، لا الجوال. هذا يمنع التلاعب ويجعل كل رقم قابلاً للمراجعة.</p></div>
-        <div><b>كابتن واحد لكل رحلة</b><p>إذا ضغط كابتنان «قبول» في اللحظة نفسها، تُسند الرحلة لواحد فقط. اختبرنا ذلك على قاعدة البيانات الفعلية.</p></div>
-        <div><b>سجل مالي لا يُعدّل</b><p>كل ريال يدخل أو يخرج يُسجل مرة واحدة ولا يُحذف، ولا تُقبل أي حركة مالية غير متوازنة.</p></div>
+        <div><b>القرار في الخادم دائماً</b><p>في التصميم المقترح، يحسب الخادم السعر والعمولة وقبول الرحلة، لا الجوال. هذا يمنع التلاعب ويجعل كل رقم قابلاً للمراجعة.</p></div>
+        <div><b>كابتن واحد لكل رحلة</b><p>إذا ضغط كابتنان «قبول» في اللحظة نفسها، تُسند الرحلة لواحد فقط. هذه القاعدة منفّذة في قاعدة البيانات واختبرناها.</p></div>
+        <div><b>سجل مالي لا يُعدّل</b><p>صممنا قاعدة البيانات بحيث يُسجل كل مبلغ مرة واحدة ولا يُحذف، ولا تُقبل حركة غير متوازنة، واختبرنا ذلك. الدفع الفعلي يُربط في المرحلة الثالثة.</p></div>
       </div>
     </div>
   </section>
@@ -361,18 +391,18 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
     <div class="wrap">
       <p class="eyebrow">دورة الرحلة</p>
       <h2>مراحل الرحلة الواحدة</h2>
-      <p class="intro">اتفقنا على هذه المراحل وما يحدث عند كل استثناء، وهي مطبقة في الخادم والتطبيقين بالقواعد نفسها.</p>
+      <p class="intro">نقترح هذه المراحل وما يحدث عند كل استثناء. هي موثقة ومبرمجة كقواعد في الأساس التقني، وتنتظر مراجعتكم. المدد والرسوم المذكورة لم تُحدد بعد.</p>
       <ol class="steps">
         <li><b>الطلب</b><span>يحدد الراكب الوجهة والفئة ويرى السعر التقديري.</span></li>
         <li><b>القبول</b><span>يصل العرض للكباتن القريبين، ويقبله أحدهم.</span></li>
-        <li><b>الوصول</b><span>يصل الكابتن، وتبدأ دقائق الانتظار المجانية.</span></li>
+        <li><b>الوصول</b><span>يصل الكابتن، وتبدأ مهلة انتظار مجانية تحددون مدتها.</span></li>
         <li><b>الرحلة</b><span>تبدأ الرحلة ويتابعها الراكب على الخريطة.</span></li>
         <li><b>الاكتمال</b><span>يُحسب السعر النهائي، ثم الدفع والتقييم.</span></li>
       </ol>
       <div class="rules">
-        <div><b>إذا لم يقبل أحد</b>يتوقف البحث بعد مدة محددة ويُبلَّغ الراكب.</div>
+        <div><b>إذا لم يقبل أحد</b>يتوقف البحث بعد مدة تحددونها، ويُبلَّغ الراكب.</div>
         <div><b>إذا ألغى الكابتن</b>يعود الطلب للبحث عن كابتن آخر تلقائياً.</div>
-        <div><b>إذا ألغى الراكب</b>مجاناً أثناء البحث، وتُطبق الرسوم بعد مهلة يُعلَن عنها قبل الإلغاء.</div>
+        <div><b>إذا ألغى الراكب</b>نقترح أن يكون الإلغاء مجانياً أثناء البحث. أما رسوم الإلغاء بعد القبول ومهلتها فتنتظر قراركم، وتظهر للراكب قبل أن يؤكد الإلغاء.</div>
       </div>
     </div>
   </section>
@@ -384,9 +414,9 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
       <p class="intro">العقد أربع مراحل خلال <span class="num">30</span> يوماً. هذه أهم مخرجات كل مرحلة:</p>
       <div class="plan">
         <div class="now"><div class="head"><b>المرحلة 1</b><span><span class="num">6</span> أيام</span><br><span class="pill ok">جاهزة للمراجعة</span></div><p>التصميم والنموذج التفاعلي، وقواعد العمل، ومعمارية النظام، والأساس التقني للتطبيقين والخادم وقاعدة البيانات.</p></div>
-        <div><div class="head"><b>المرحلة 2</b><span><span class="num">9</span> أيام</span><br><span class="pill next">التالية</span></div><p>تطبيقا الراكب والكابتن فعلياً: التسجيل برمز الجوال، والخرائط، وطلب الرحلة وقبولها وإتمامها.</p></div>
-        <div><div class="head"><b>المرحلة 3</b><span><span class="num">8</span> أيام</span><br><span class="pill next">لاحقاً</span></div><p>تتبع الكابتن مباشرة، والإشعارات، ولوحة الإدارة، والأسعار والكوبونات، وربط بوابة الدفع في وضع التجربة.</p></div>
-        <div><div class="head"><b>المرحلة 4</b><span><span class="num">7</span> أيام</span><br><span class="pill next">لاحقاً</span></div><p>الاختبار على أجهزة حقيقية، والنشر في متجري Apple وGoogle، وتسليم الكود والحسابات والوثائق، ثم ضمان <span class="num">45</span> يوماً.</p></div>
+        <div><div class="head"><b>المرحلة 2</b><span><span class="num">9</span> أيام</span><br><span class="pill soon">التالية</span></div><p>تطبيقا الراكب والكابتن فعلياً: التسجيل برمز الجوال، والخرائط، وطلب الرحلة وقبولها وإتمامها.</p></div>
+        <div><div class="head"><b>المرحلة 3</b><span><span class="num">8</span> أيام</span><br><span class="pill soon">لاحقاً</span></div><p>تتبع الكابتن مباشرة، والإشعارات، ولوحة الإدارة، والأسعار والكوبونات، وربط بوابة الدفع في وضع التجربة.</p></div>
+        <div><div class="head"><b>المرحلة 4</b><span><span class="num">7</span> أيام</span><br><span class="pill soon">لاحقاً</span></div><p>الاختبار على أجهزة حقيقية، والنشر في متجري Apple وGoogle، وتسليم الكود والحسابات والوثائق، ثم ضمان لعيوب التنفيذ مدته <span class="num">45</span> يوماً يبدأ بعد نشر التطبيقين.</p></div>
       </div>
     </div>
   </section>
@@ -394,16 +424,20 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
   <section id="decisions">
     <div class="wrap">
       <p class="eyebrow">مطلوب منكم</p>
-      <h2>سبعة قرارات قبل المرحلة الثانية</h2>
-      <p class="intro">لكل قرار اقتراحنا. يكفي أن تردوا بـ«موافق» أو بما تفضلونه. إن لم يكن القرار جاهزاً، فيكفي موعد متوقع له.</p>
+      <h2>سبعة قرارات للمرحلة الثانية</h2>
+      <p class="intro">لكل قرار اقتراح مبدئي، ولا يُعد أي اقتراح معتمداً حتى تؤكدوه. يكفي أن تردوا بـ«موافق» أو بما تفضلونه، وإن لم يكن القرار جاهزاً فيكفي موعد متوقع له.</p>
+      <p class="who">مطلوبة قبل بدء المرحلة الثانية</p>
       <div class="ask">
-        <div class="q urgent"><h3>حسابات المتاجر باسم شركتكم</h3><p class="rec"><b>نقترح:</b> تسجّل شركتكم حسابَي مطوّر في Apple وGoogle Play، ثم تضيفوننا بصلاحيات محدودة.</p><p class="why">حساب Apple للشركات يحتاج رقم D-U-N-S وقد يستغرق أسابيع، ومن دونه لا يمكن التجربة على iPhone أو النشر في المتجر.</p></div>
-        <div class="q"><h3>مدينة الإطلاق ومناطق الخدمة</h3><p class="rec"><b>نقترح:</b> الرياض، وتزودوننا بقائمة الأحياء ونرسم حدودها لموافقتكم، والمطار منطقة مستقلة.</p><p class="why">الطلبات خارج الحدود تُرفض، وإضافة مناطق لاحقاً تعديل بسيط في الإعدادات.</p></div>
-        <div class="q"><h3>فئات السيارات</h3><p class="rec"><b>نقترح:</b> اقتصادي ومريح وعائلي كما في النموذج، مع حد أدنى لسنة الصنع لكل فئة.</p><p class="why">فئات أقل عند الإطلاق تعني وصول الكابتن أسرع.</p></div>
-        <div class="q"><h3>الاسم والشعار النهائيان</h3><p class="rec"><b>نقترح:</b> اعتماد «مَشوار» أو تزويدنا بالهوية النهائية الآن.</p><p class="why">اسم التطبيق ومعرّفه في المتجر يصعب تغييرهما بعد النشر، وأيقونات التطبيق تنتظر هذا القرار.</p></div>
-        <div class="q"><h3>الاستضافة</h3><p class="rec"><b>نقترح:</b> مزود استضافة لديه مراكز بيانات داخل المملكة، بحساب باسم شركتكم، بعد مراجعة مستشاركم لنظام حماية البيانات الشخصية.</p><p class="why">نحتاجه لبيئة التجربة في المرحلة الثانية، والانتقال لاحقاً مكلف.</p></div>
-        <div class="q"><h3>خدمة الرسائل والخرائط</h3><p class="rec"><b>نقترح:</b> مزود رسائل سعودي مرخص باسم مرسل مسجّل، ورمز تحقق من <span class="num">6</span> أرقام. والخرائط من Google Maps على حسابكم.</p><p class="why">تسجيل اسم المرسل يحتاج وقتاً، وتكلفة الخرائط بحسب الاستخدام على حسابكم.</p></div>
-        <div class="q"><h3>حساب GitHub لشركتكم</h3><p class="rec"><b>نقترح:</b> تنشئون حساب منظمة على GitHub، فننقل إليه الكود كاملاً بتاريخه.</p><p class="why">الكود مستضاف مؤقتاً على حسابنا إلى أن يتوفر حسابكم.</p></div>
+        <div class="q urgent"><h3>حسابات المتاجر باسم شركتكم</h3><p class="rec"><b class="tag">اقتراح مبدئي — بانتظار اعتماد العميل</b> تسجّل شركتكم حسابَي مطوّر في Apple وGoogle Play، ثم تضيفوننا بصلاحيات محدودة.</p><p class="why">حساب Apple للشركات يحتاج رقم D-U-N-S وقد يستغرق أسابيع، ومن دونه لا يمكن التجربة على iPhone أو النشر في المتجر.</p></div>
+        <div class="q"><h3>مدينة الإطلاق ومناطق الخدمة</h3><p class="rec"><b class="tag">اقتراح مبدئي — بانتظار اعتماد العميل</b> الرياض، وتزودوننا بقائمة الأحياء ونرسم حدودها لموافقتكم، والمطار منطقة مستقلة.</p><p class="why">الطلبات خارج الحدود تُرفض، وإضافة مناطق لاحقاً تعديل بسيط في الإعدادات.</p></div>
+        <div class="q"><h3>فئات السيارات</h3><p class="rec"><b class="tag">اقتراح مبدئي — بانتظار اعتماد العميل</b> اقتصادي ومريح وعائلي كما في النموذج، مع حد أدنى لسنة الصنع لكل فئة.</p><p class="why">فئات أقل عند الإطلاق تعني وصول الكابتن أسرع.</p></div>
+        <div class="q"><h3>خدمة الرسائل والخرائط</h3><p class="rec"><b class="tag">اقتراح مبدئي — بانتظار اعتماد العميل</b> مزود رسائل سعودي مرخص باسم مرسل مسجّل، ورمز تحقق من <span class="num">6</span> أرقام، والخرائط من Google Maps على حسابكم.</p><p class="why">تسجيل الدخول برمز الجوال والخرائط من أعمال المرحلة الثانية. تسجيل اسم المرسل يحتاج وقتاً، وتكلفة الخرائط بحسب الاستخدام على حسابكم.</p></div>
+      </div>
+      <p class="who">يمكن أن تنتظر حتى أثناء المرحلة الثانية</p>
+      <div class="ask">
+        <div class="q"><h3>الاسم والشعار النهائيان</h3><p class="rec"><b class="tag">اقتراح مبدئي — بانتظار اعتماد العميل</b> اعتماد «مَشوار» أو تزويدنا بالهوية النهائية، مع معرّف التطبيق في المتاجر باسم نطاق شركتكم.</p><p class="why">نحتاجه قبل أول رفع للتطبيق إلى المتاجر، لأن الاسم والمعرّف يصعب تغييرهما بعده، وأيقونات التطبيق تنتظر هذا القرار.</p></div>
+        <div class="q"><h3>الاستضافة</h3><p class="rec"><b class="tag">اقتراح مبدئي — بانتظار اعتماد العميل</b> مزود استضافة لديه مراكز بيانات داخل المملكة، بحساب باسم شركتكم، بعد مراجعة مستشاركم لنظام حماية البيانات الشخصية.</p><p class="why">نحتاجه لبيئة التجربة خلال المرحلة الثانية، والانتقال لاحقاً مكلف.</p></div>
+        <div class="q"><h3>حساب GitHub لشركتكم</h3><p class="rec"><b class="tag">اقتراح مبدئي — بانتظار اعتماد العميل</b> تنشئون حساب منظمة على GitHub، فننقل إليه الكود كاملاً بتاريخه.</p><p class="why">لا يعطّل العمل، لكن الكود مستضاف مؤقتاً على حسابنا إلى أن يتوفر حسابكم.</p></div>
       </div>
 
       <div class="later">
@@ -413,8 +447,9 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
           <li><b>الأسعار:</b> التعرفة لكل فئة، ورسوم الانتظار والإلغاء.</li>
           <li><b>الضريبة:</b> الأسعار شاملة الضريبة أم لا، وجهة إصدار الفاتورة، بعد استشارة مستشاركم الضريبي.</li>
           <li><b>بوابة الدفع:</b> نرشح لكم مزودَين سعوديَّين مرخصَين، وتتعاقدون مع أحدهما.</li>
+          <li><b>قواعد أخرى:</b> الكوبونات، وحدود مستحقات الكباتن في الرحلات النقدية، ومواعيد تحويل أرباح الكباتن.</li>
         </ul>
-        <p style="color:var(--muted);font-size:14px">القائمة الكاملة، وفيها <span class="num">36</span> قراراً مع توصياتها، متاحة لمن يرغب في التفاصيل. لكن القرارات أعلاه هي كل ما نحتاجه الآن.</p>
+        <p style="color:var(--muted);font-size:14px">لم يُعتمد شيء من هذه القيم بعد، والأرقام الظاهرة في النموذج للعرض فقط. القائمة الكاملة، وفيها <span class="num">36</span> قراراً مع توصياتها، متاحة لمن يرغب في التفاصيل، لكن القرارات أعلاه هي كل ما نحتاجه الآن.</p>
       </div>
     </div>
   </section>
@@ -426,7 +461,7 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
       <div class="next">
         <div><small>الخطوة 1</small><b>مراجعة الشاشات</b><p>جرّبوا <a href="../" style="color:#7BE3CE">النموذج التفاعلي</a> وأخبرونا بالموافقة أو بالتعديلات المطلوبة على كل قسم.</p></div>
         <div><small>الخطوة 2</small><b>الرد على القرارات السبعة</b><p>بالموافقة على اقتراحنا، أو برأيكم، أو بموعد متوقع للقرار.</p></div>
-        <div><small>الخطوة 3</small><b>اعتماد المرحلة</b><p>نرسل لكم قائمة القبول للتوقيع، ثم نبدأ المرحلة الثانية.</p></div>
+        <div><small>الخطوة 3</small><b>اعتماد المرحلة</b><p>بعد ملاحظاتكم نُجري التعديلات المطلوبة، ثم نرسل قائمة القبول لتراجعوها وتوقّعوها. لا ننتقل للمرحلة الثانية قبل اعتمادكم.</p></div>
       </div>
     </div>
   </section>
@@ -435,7 +470,7 @@ footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; d
 <footer>
   <div class="wrap">
     <span>مَشوار · تسليم المرحلة الأولى</span>
-    <span>الوثائق التفصيلية للفريق التقني: <a href="https://github.com/jksoftwaresolutions/mashwar-prototype/tree/main/docs/phase1">docs/phase1</a></span>
+    <span>الوثائق التفصيلية للفريق التقني: <a href="https://github.com/jksoftwaresolutions/mashwar-prototype/blob/main/docs/phase1/README.md">وثائق المرحلة الأولى</a></span>
   </div>
 </footer>
 
