@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>مَشوار — تسليم المرحلة الأولى</title>
+<link rel="icon" href="img/mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one reading column; a navy cover band, then sections that alternate text and visuals. */
+:root {
+  --navy: #101B2E;
+  --emerald: #0FAF92;
+  --emerald-d: #0B8F77;
+  --gold: #D7A867;
+  --bg: #F6F8FB;
+  --surface: #FFFFFF;
+  --ink: #182335;
+  --muted: #5F6B7E;
+  --line: #E2E7EF;
+  --tint: #E6F8F2;
+  --gold-tint: #FBF3E6;
+  --cover: #101B2E;
+  --cover-ink: #FFFFFF;
+  --core: #101B2E;
+  --cover-muted: #A9B4C6;
+  --shadow: 0 1px 2px rgba(16,27,46,.04), 0 12px 32px -18px rgba(16,27,46,.18);
+  --font: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1524; --surface: #142036; --ink: #E8EDF5; --muted: #9AA7BB; --line: #24324A;
+    --tint: #10342F; --gold-tint: #33291A; --emerald-d: #3FD1B4; --cover: #08101D; --core: #24406A;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px -18px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1524; --surface: #142036; --ink: #E8EDF5; --muted: #9AA7BB; --line: #24324A;
+  --tint: #10342F; --gold-tint: #33291A; --emerald-d: #3FD1B4; --cover: #08101D; --core: #24406A;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px -18px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.75 var(--font); }
+img { max-width: 100%; display: block; }
+a { color: var(--emerald-d); font-weight: 600; }
+a:focus-visible { outline: 2px solid var(--emerald); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { line-height: 1.35; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.num { font-variant-numeric: tabular-nums; }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+
+.wrap { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Cover */
+.cover { background: var(--cover); color: var(--cover-ink); }
+.cover .wrap { padding-block: 40px 48px; display: grid; gap: 28px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand img { width: 44px; height: 44px; border-radius: 10px; }
+.brand b { font-size: 20px; }
+.brand span { color: var(--cover-muted); font-size: 13px; display: block; line-height: 1.3; }
+.cover h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 700; }
+.cover .lead { color: var(--cover-muted); font-size: 18px; max-width: 60ch; }
+.status { display: inline-flex; align-items: center; gap: 10px; background: rgba(15,175,146,.14); color: #7BE3CE; border: 1px solid rgba(15,175,146,.35); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 14px; width: fit-content; }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); }
+
+/* Contract phases strip */
+.phases { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.phase { border-top: 4px solid rgba(255,255,255,.18); padding-top: 10px; min-width: 0; }
+.phase.on { border-top-color: var(--emerald); }
+.phase small { color: var(--cover-muted); font-size: 12px; display: block; }
+.phase b { font-size: 15px; display: block; line-height: 1.4; }
+.phase em { font-style: normal; color: var(--cover-muted); font-size: 13px; }
+.phase.on em { color: #7BE3CE; }
+
+/* Sections */
+section { padding-block: 56px 8px; }
+.eyebrow { color: var(--emerald-d); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+section h2 { font-size: clamp(24px, 4vw, 30px); font-weight: 700; margin-bottom: 12px; }
+.intro { color: var(--muted); max-width: 65ch; margin-bottom: 28px; }
+
+/* Summary blocks */
+.done { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.done article { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; min-width: 0; display: grid; gap: 8px; align-content: start; }
+.done h3 { font-size: 18px; display: flex; gap: 10px; align-items: center; }
+.done h3 svg { flex: none; width: 28px; height: 28px; padding: 5px; border-radius: 8px; background: var(--tint); color: var(--emerald-d); }
+.done p { color: var(--muted); }
+
+.tally { margin-top: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px 22px; display: grid; gap: 14px; }
+.bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; gap: 2px; }
+.bar i { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.legend b { color: var(--ink); }
+.c-done { background: var(--emerald); }
+.c-you { background: var(--gold); }
+.c-plan { background: #6C8BC7; }
+.c-part { background: var(--line); }
+
+/* Screens */
+.screens { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.screens figure { margin: 0; min-width: 0; display: grid; gap: 10px; align-content: start; }
+.phone { border-radius: 26px; overflow: hidden; border: 6px solid var(--navy); background: var(--navy); box-shadow: var(--shadow); aspect-ratio: 390 / 788; max-width: 100%; }
+.phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+figcaption b { display: block; font-size: 15px; }
+figcaption span { color: var(--muted); font-size: 14px; line-height: 1.6; display: block; }
+.wide { margin: 28px 0 0; display: grid; gap: 10px; }
+.wide .frame { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); }
+.who { font-size: 13px; font-weight: 600; color: var(--muted); margin: 28px 0 12px; display: flex; align-items: center; gap: 8px; }
+.who::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+.note { margin-top: 24px; background: var(--gold-tint); border-radius: 16px; padding: 16px 20px; font-size: 15px; display: grid; gap: 6px; }
+.note b { font-size: 15px; }
+
+/* Diagrams */
+.diagram { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 16px; overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 620px; height: auto; }
+.d-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.d-app { fill: var(--tint); stroke: var(--emerald); stroke-width: 1.5; }
+.d-core { fill: var(--core); }
+.d-later { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 5; }
+.d-t { fill: var(--ink); font: 700 15px var(--font); }
+.d-s { fill: var(--muted); font: 400 12.5px var(--font); }
+.d-tw { fill: #FFFFFF; font: 700 16px var(--font); }
+.d-sw { fill: #A9B4C6; font: 400 12.5px var(--font); }
+.d-line { stroke: var(--emerald); stroke-width: 2; fill: none; }
+.d-dash { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 5; }
+.d-tag { fill: var(--gold-tint); }
+.d-tagt { fill: var(--ink); font: 600 11.5px var(--font); }
+.explain { margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; font-size: 15px; }
+.explain div { min-width: 0; }
+.explain b { display: block; }
+.explain p { color: var(--muted); }
+
+/* Trip steps */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; counter-reset: s; }
+.steps li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; min-width: 0; display: grid; gap: 4px; align-content: start; position: relative; }
+.steps li::before { content: counter(s); width: 26px; height: 26px; border-radius: 50%; background: var(--emerald); color: #fff; font-weight: 700; font-size: 13px; display: grid; place-items: center; }
+.steps b { font-size: 15px; }
+.steps span { color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+.rules { margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-size: 14px; }
+.rules div { border-inline-start: 3px solid var(--gold); padding: 4px 12px; color: var(--muted); min-width: 0; }
+.rules b { color: var(--ink); display: block; }
+
+/* Plan */
+.plan { display: grid; gap: 10px; }
+.plan > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 20px; }
+.plan .head b { display: block; font-size: 16px; }
+.plan .head span { color: var(--muted); font-size: 13.5px; }
+.plan p { color: var(--muted); font-size: 15px; }
+.plan .now { border-color: var(--emerald); box-shadow: inset 4px 0 0 var(--emerald); }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 1px 10px; margin-top: 4px; }
+.pill.ok { background: var(--tint); color: var(--emerald-d); }
+.pill.next { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+
+/* Decisions */
+.ask { display: grid; gap: 12px; counter-reset: q; }
+.q { counter-increment: q; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 4px 14px; }
+.q::before { content: counter(q); grid-row: span 3; width: 34px; height: 34px; border-radius: 10px; background: var(--navy); color: #fff; font-weight: 700; display: grid; place-items: center; }
+.q h3 { font-size: 17px; }
+.q .rec { font-size: 15px; }
+.q .rec b { color: var(--emerald-d); }
+.q .why { color: var(--muted); font-size: 14px; }
+.q.urgent { border-color: var(--gold); }
+.q.urgent h3::after { content: "ابدؤوا بها الآن"; font-size: 12px; font-weight: 600; background: var(--gold-tint); color: var(--ink); border-radius: 999px; padding: 2px 10px; margin-inline-start: 10px; vertical-align: middle; white-space: nowrap; }
+.later { margin-top: 20px; background: var(--surface); border: 1px dashed var(--line); border-radius: 18px; padding: 18px 20px; display: grid; gap: 10px; }
+.later h3 { font-size: 16px; }
+.later ul { margin: 0; padding-inline-start: 20px; color: var(--muted); font-size: 15px; display: grid; gap: 4px; }
+.later li b { color: var(--ink); }
+
+/* Next steps */
+.next { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.next div { background: var(--navy); color: #fff; border-radius: 20px; padding: 22px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.next small { color: #7BE3CE; font-weight: 600; font-size: 13px; }
+.next b { font-size: 17px; }
+.next p { color: #C3CCDA; font-size: 15px; }
+
+footer { margin-top: 64px; border-top: 1px solid var(--line); }
+footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+@media (max-width: 760px) {
+  .done, .explain, .rules, .next { grid-template-columns: minmax(0, 1fr); }
+  .screens { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 62%; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+  .screens figure { scroll-snap-align: start; }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .plan > div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .phases { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; }
+  section { padding-block: 44px 4px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="wrap">
+    <div class="brand">
+      <img src="img/mark.svg" alt="">
+      <div><b>مَشوار</b><span>تطبيق طلب رحلات · المملكة العربية السعودية</span></div>
+    </div>
+    <div style="display:grid;gap:14px">
+      <span class="status">المرحلة الأولى جاهزة لمراجعتكم</span>
+      <h1>تسليم المرحلة الأولى: التصميم والتخطيط والأساس التقني</h1>
+      <p class="lead">تجمع هذه الصفحة ما أنجزناه في المرحلة الأولى بلغة مبسطة، مع صور الشاشات ومخطط مبسّط لطريقة عمل النظام، وقائمة قصيرة بما نحتاجه منكم للانتقال إلى المرحلة الثانية.</p>
+    </div>
+    <div class="phases" aria-label="مراحل العقد">
+      <div class="phase on"><small>المرحلة 1 · <span class="num">6</span> أيام</small><b>التصميم والتخطيط</b><em>جاهزة للمراجعة</em></div>
+      <div class="phase"><small>المرحلة 2 · <span class="num">9</span> أيام</small><b>التطبيقان والحجز</b><em>التالية</em></div>
+      <div class="phase"><small>المرحلة 3 · <span class="num">8</span> أيام</small><b>التتبع والإدارة والدفع</b><em>لاحقاً</em></div>
+      <div class="phase"><small>المرحلة 4 · <span class="num">7</span> أيام</small><b>الاختبار والإطلاق والتسليم</b><em>لاحقاً</em></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="summary">
+    <div class="wrap">
+      <p class="eyebrow">الخلاصة</p>
+      <h2>ما الذي أنجزناه في المرحلة الأولى</h2>
+      <p class="intro">هدف هذه المرحلة أن نتفق على شكل التطبيق وقواعد عمله قبل البناء الفعلي، وأن نجهز الأساس التقني الذي ستُبنى عليه المراحل التالية. أنجزنا الأجزاء الأربعة التالية:</p>
+      <div class="done">
+        <article>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M11 18h2"/></svg>نموذج تفاعلي للتصميم</h3>
+          <p>تطبيق الراكب وتطبيق الكابتن ولوحة الإدارة، بالعربية والإنجليزية. يمكنكم تجربة رحلة كاملة من الطلب حتى التقييم. وافقتم على الاتجاه العام للتصميم، ونحتاج الآن إقراركم للشاشات.</p>
+        </article>
+        <article>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>قواعد العمل مكتوبة</h3>
+          <p>نطاق المشروع، ومراحل الرحلة من الطلب حتى الإلغاء، وقواعد الأسعار والانتظار والإلغاء والعمولة، وخطة الدفع عبر مدى وApple Pay والبطاقات والنقد.</p>
+        </article>
+        <article>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>الأساس التقني جاهز</h3>
+          <p>أنشأنا مشروعَي التطبيقين للراكب والكابتن، والخادم، وقاعدة البيانات، وهيكل لوحة الإدارة. هذا ليس تصميماً على الورق فقط، فالأساس يعمل ومختبر.</p>
+        </article>
+        <article>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>فحص تلقائي مع كل تعديل</h3>
+          <p>عند كل تعديل يُعاد فحص النموذج والخادم وقاعدة البيانات والتطبيقين تلقائياً، وآخر فحص نجح بالكامل. كما نجح بناء نسخة Android من التطبيقين.</p>
+        </article>
+      </div>
+
+      <div class="tally" aria-label="حالة بنود المرحلة الأولى">
+        <p><b>راجعنا <span class="num">47</span> بنداً من بنود المرحلة الأولى واحداً واحداً:</b></p>
+        <div class="bar" aria-hidden="true">
+          <i class="c-done" style="width:59.6%"></i><i class="c-you" style="width:17%"></i><i class="c-plan" style="width:14.9%"></i><i class="c-part" style="width:8.5%"></i>
+        </div>
+        <div class="legend">
+          <span><i class="c-done"></i><b class="num">28</b> مكتمل ومُتحقق منه</span>
+          <span><i class="c-you"></i><b class="num">8</b> ينتظر موافقتكم</span>
+          <span><i class="c-plan"></i><b class="num">7</b> خطة مكتوبة تُنفذ في مرحلة لاحقة</span>
+          <span><i class="c-part"></i><b class="num">4</b> مكتمل جزئياً أو يُستكمل لاحقاً</span>
+        </div>
+        <p style="color:var(--muted);font-size:14px">البنود الأربعة الأخيرة هي أيقونات التطبيق (تنتظر الاسم والشعار النهائيين)، وتسجيل الدخول برمز الجوال (المرحلة الثانية)، وإعدادات بيئات التشغيل (تنتظر اختيار الاستضافة)، والتحقق من نسخة iPhone (تحتاج جهاز Mac، في المرحلة الثانية).</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="screens">
+    <div class="wrap">
+      <p class="eyebrow">التصميم</p>
+      <h2>الشاشات كما سيراها المستخدمون</h2>
+      <p class="intro">صور من النموذج التفاعلي بالعربية وبحجم الجوال، تتبع رحلة واحدة كاملة. يمكنكم تجربتها بأنفسكم من <a href="../">رابط النموذج</a>.</p>
+
+      <p class="who">الراكب</p>
+      <div class="screens">
+        <figure><div class="phone"><img src="img/rider-home.png" alt="الشاشة الرئيسية لتطبيق الراكب" loading="lazy"></div><figcaption><b>الصفحة الرئيسية</b><span>يختار الراكب وجهته أو أحد الأماكن المحفوظة.</span></figcaption></figure>
+        <figure><div class="phone"><img src="img/rider-select.png" alt="اختيار فئة الرحلة مع الأسعار التقديرية" loading="lazy"></div><figcaption><b>اختيار الفئة</b><span>اقتصادي ومريح وعائلي، مع السعر التقديري ووقت الوصول.</span></figcaption></figure>
+        <figure><div class="phone"><img src="img/rider-searching.png" alt="البحث عن كابتن قريب" loading="lazy"></div><figcaption><b>البحث عن كابتن</b><span>يُرسل الطلب لأقرب الكباتن، ويمكن الإلغاء مجاناً أثناء البحث.</span></figcaption></figure>
+      </div>
+
+      <p class="who">الكابتن</p>
+      <div class="screens">
+        <figure><div class="phone"><img src="img/captain-request.png" alt="طلب رحلة جديد في تطبيق الكابتن" loading="lazy"></div><figcaption><b>طلب جديد</b><span>يرى الكابتن الأرباح المتوقعة والمسافة قبل القبول.</span></figcaption></figure>
+        <figure><div class="phone"><img src="img/captain-pickup.png" alt="الكابتن في الطريق إلى الراكب" loading="lazy"></div><figcaption><b>في الطريق للراكب</b><span>يتابع الكابتن الطريق ثم يؤكد الوصول ويبدأ الرحلة.</span></figcaption></figure>
+        <figure><div class="phone"><img src="img/rider-enroute.png" alt="الراكب يتابع وصول الكابتن" loading="lazy"></div><figcaption><b>الراكب يتابع الكابتن</b><span>بيانات الكابتن والسيارة واللوحة، مع الاتصال والمشاركة وزر الأمان.</span></figcaption></figure>
+      </div>
+
+      <p class="who">لوحة الإدارة</p>
+      <figure class="wide">
+        <div class="frame"><img src="img/admin-desktop.png" alt="لوحة الإدارة: نظرة عامة على أداء المنصة" loading="lazy"></div>
+        <figcaption><b>نظرة عامة على التشغيل</b><span>تضم اثني عشر قسماً: الرحلات، والرحلات المباشرة، والكباتن، والركاب، والمركبات، والمدفوعات، والعروض، والتقييمات، والدعم، والتقارير، والإعدادات. كل موظف يرى الأقسام المسموح له بها فقط.</span></figcaption>
+      </figure>
+
+      <div class="note">
+        <b>ما هو تجريبي في النموذج</b>
+        <p>الخريطة مرسومة للعرض، والدفع والرسائل محاكاة (رمز التحقق التجريبي <span class="num ltr">1234</span>)، والأرقام والأسماء بيانات وهمية. الأسعار ونسبة العمولة (<span class="num">20%</span>) قيم مبدئية لم تُعتمد. تُبنى الخرائط والرسائل الحقيقية في المرحلة الثانية، والدفع في المرحلة الثالثة.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <p class="eyebrow">طريقة العمل</p>
+      <h2>كيف يعمل النظام</h2>
+      <p class="intro">ثلاث واجهات يستخدمها الناس، وخادم واحد هو المرجع لكل القرارات، وقاعدة بيانات تحفظ كل شيء. الخدمات الخارجية تُربط في المراحل القادمة بحسابات باسم شركتكم.</p>
+      <div class="diagram" role="img" aria-label="مخطط النظام: تطبيق الراكب وتطبيق الكابتن ولوحة الإدارة تتصل بالخادم، والخادم يتصل بقاعدة البيانات وبخدمات الخرائط والرسائل والدفع">
+        <svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg">
+          <!-- connectors: apps (right) to server (centre) -->
+          <path class="d-line" d="M556 70 H520 V180 H486"/>
+          <path class="d-line" d="M556 180 H486"/>
+          <path class="d-line" d="M556 290 H520 V180"/>
+          <!-- server to database and services (left) -->
+          <path class="d-line" d="M274 180 H214"/>
+          <path class="d-dash" d="M274 180 H244 V60 H214"/>
+          <path class="d-dash" d="M244 180 V300 H214"/>
+
+          <rect class="d-app" x="556" y="30" width="190" height="80" rx="14"/>
+          <text class="d-t" x="651" y="64" text-anchor="middle">تطبيق الراكب</text>
+          <text class="d-s" x="651" y="86" text-anchor="middle">أندرويد وآيفون</text>
+
+          <rect class="d-app" x="556" y="140" width="190" height="80" rx="14"/>
+          <text class="d-t" x="651" y="174" text-anchor="middle">تطبيق الكابتن</text>
+          <text class="d-s" x="651" y="196" text-anchor="middle">أندرويد وآيفون</text>
+
+          <rect class="d-app" x="556" y="250" width="190" height="80" rx="14"/>
+          <text class="d-t" x="651" y="284" text-anchor="middle">لوحة الإدارة</text>
+          <text class="d-s" x="651" y="306" text-anchor="middle">متصفح الويب</text>
+
+          <rect class="d-core" x="274" y="110" width="212" height="140" rx="18"/>
+          <text class="d-tw" x="380" y="150" text-anchor="middle">الخادم</text>
+          <text class="d-sw" x="380" y="176" text-anchor="middle">يحسب الأسعار ويوزع الطلبات</text>
+          <text class="d-sw" x="380" y="196" text-anchor="middle">يتحقق من الصلاحيات</text>
+          <text class="d-sw" x="380" y="216" text-anchor="middle">يسجل كل عملية مالية</text>
+
+          <rect class="d-box" x="14" y="140" width="200" height="80" rx="14"/>
+          <text class="d-t" x="114" y="174" text-anchor="middle">قاعدة البيانات</text>
+          <text class="d-s" x="114" y="196" text-anchor="middle">الرحلات والحسابات والمدفوعات</text>
+
+          <rect class="d-later" x="14" y="20" width="200" height="80" rx="14"/>
+          <text class="d-t" x="114" y="54" text-anchor="middle">الخرائط والرسائل</text>
+          <text class="d-s" x="114" y="76" text-anchor="middle">رمز التحقق · الاتجاهات</text>
+
+          <rect class="d-later" x="14" y="260" width="200" height="80" rx="14"/>
+          <text class="d-t" x="114" y="294" text-anchor="middle">بوابة الدفع</text>
+          <text class="d-s" x="114" y="316" text-anchor="middle">مدى · Apple Pay · البطاقات</text>
+
+          <rect class="d-tag" x="150" y="8" width="72" height="22" rx="11"/>
+          <text class="d-tagt" x="186" y="23" text-anchor="middle">المرحلة 2</text>
+          <rect class="d-tag" x="150" y="248" width="72" height="22" rx="11"/>
+          <text class="d-tagt" x="186" y="263" text-anchor="middle">المرحلة 3</text>
+          <rect class="d-tag" x="150" y="128" width="72" height="22" rx="11"/>
+          <text class="d-tagt" x="186" y="143" text-anchor="middle">جاهزة الآن</text>
+        </svg>
+      </div>
+      <div class="explain">
+        <div><b>القرار في الخادم دائماً</b><p>السعر والعمولة وقبول الرحلة يحسبها الخادم، لا الجوال. هذا يمنع التلاعب ويجعل كل رقم قابلاً للمراجعة.</p></div>
+        <div><b>كابتن واحد لكل رحلة</b><p>إذا ضغط كابتنان «قبول» في اللحظة نفسها، تُسند الرحلة لواحد فقط. اختبرنا ذلك على قاعدة البيانات الفعلية.</p></div>
+        <div><b>سجل مالي لا يُعدّل</b><p>كل ريال يدخل أو يخرج يُسجل مرة واحدة ولا يُحذف، ولا تُقبل أي حركة مالية غير متوازنة.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="trip">
+    <div class="wrap">
+      <p class="eyebrow">دورة الرحلة</p>
+      <h2>مراحل الرحلة الواحدة</h2>
+      <p class="intro">اتفقنا على هذه المراحل وما يحدث عند كل استثناء، وهي مطبقة في الخادم والتطبيقين بالقواعد نفسها.</p>
+      <ol class="steps">
+        <li><b>الطلب</b><span>يحدد الراكب الوجهة والفئة ويرى السعر التقديري.</span></li>
+        <li><b>القبول</b><span>يصل العرض للكباتن القريبين، ويقبله أحدهم.</span></li>
+        <li><b>الوصول</b><span>يصل الكابتن، وتبدأ دقائق الانتظار المجانية.</span></li>
+        <li><b>الرحلة</b><span>تبدأ الرحلة ويتابعها الراكب على الخريطة.</span></li>
+        <li><b>الاكتمال</b><span>يُحسب السعر النهائي، ثم الدفع والتقييم.</span></li>
+      </ol>
+      <div class="rules">
+        <div><b>إذا لم يقبل أحد</b>يتوقف البحث بعد مدة محددة ويُبلَّغ الراكب.</div>
+        <div><b>إذا ألغى الكابتن</b>يعود الطلب للبحث عن كابتن آخر تلقائياً.</div>
+        <div><b>إذا ألغى الراكب</b>مجاناً أثناء البحث، وتُطبق الرسوم بعد مهلة يُعلَن عنها قبل الإلغاء.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="plan">
+    <div class="wrap">
+      <p class="eyebrow">الخطة</p>
+      <h2>ما تبقى من العقد</h2>
+      <p class="intro">العقد أربع مراحل خلال <span class="num">30</span> يوماً. هذه أهم مخرجات كل مرحلة:</p>
+      <div class="plan">
+        <div class="now"><div class="head"><b>المرحلة 1</b><span><span class="num">6</span> أيام</span><br><span class="pill ok">جاهزة للمراجعة</span></div><p>التصميم والنموذج التفاعلي، وقواعد العمل، ومعمارية النظام، والأساس التقني للتطبيقين والخادم وقاعدة البيانات.</p></div>
+        <div><div class="head"><b>المرحلة 2</b><span><span class="num">9</span> أيام</span><br><span class="pill next">التالية</span></div><p>تطبيقا الراكب والكابتن فعلياً: التسجيل برمز الجوال، والخرائط، وطلب الرحلة وقبولها وإتمامها.</p></div>
+        <div><div class="head"><b>المرحلة 3</b><span><span class="num">8</span> أيام</span><br><span class="pill next">لاحقاً</span></div><p>تتبع الكابتن مباشرة، والإشعارات، ولوحة الإدارة، والأسعار والكوبونات، وربط بوابة الدفع في وضع التجربة.</p></div>
+        <div><div class="head"><b>المرحلة 4</b><span><span class="num">7</span> أيام</span><br><span class="pill next">لاحقاً</span></div><p>الاختبار على أجهزة حقيقية، والنشر في متجري Apple وGoogle، وتسليم الكود والحسابات والوثائق، ثم ضمان <span class="num">45</span> يوماً.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="decisions">
+    <div class="wrap">
+      <p class="eyebrow">مطلوب منكم</p>
+      <h2>سبعة قرارات قبل المرحلة الثانية</h2>
+      <p class="intro">لكل قرار اقتراحنا. يكفي أن تردوا بـ«موافق» أو بما تفضلونه. إن لم يكن القرار جاهزاً، فيكفي موعد متوقع له.</p>
+      <div class="ask">
+        <div class="q urgent"><h3>حسابات المتاجر باسم شركتكم</h3><p class="rec"><b>نقترح:</b> تسجّل شركتكم حسابَي مطوّر في Apple وGoogle Play، ثم تضيفوننا بصلاحيات محدودة.</p><p class="why">حساب Apple للشركات يحتاج رقم D-U-N-S وقد يستغرق أسابيع، ومن دونه لا يمكن التجربة على iPhone أو النشر في المتجر.</p></div>
+        <div class="q"><h3>مدينة الإطلاق ومناطق الخدمة</h3><p class="rec"><b>نقترح:</b> الرياض، وتزودوننا بقائمة الأحياء ونرسم حدودها لموافقتكم، والمطار منطقة مستقلة.</p><p class="why">الطلبات خارج الحدود تُرفض، وإضافة مناطق لاحقاً تعديل بسيط في الإعدادات.</p></div>
+        <div class="q"><h3>فئات السيارات</h3><p class="rec"><b>نقترح:</b> اقتصادي ومريح وعائلي كما في النموذج، مع حد أدنى لسنة الصنع لكل فئة.</p><p class="why">فئات أقل عند الإطلاق تعني وصول الكابتن أسرع.</p></div>
+        <div class="q"><h3>الاسم والشعار النهائيان</h3><p class="rec"><b>نقترح:</b> اعتماد «مَشوار» أو تزويدنا بالهوية النهائية الآن.</p><p class="why">اسم التطبيق ومعرّفه في المتجر يصعب تغييرهما بعد النشر، وأيقونات التطبيق تنتظر هذا القرار.</p></div>
+        <div class="q"><h3>الاستضافة</h3><p class="rec"><b>نقترح:</b> مزود استضافة لديه مراكز بيانات داخل المملكة، بحساب باسم شركتكم، بعد مراجعة مستشاركم لنظام حماية البيانات الشخصية.</p><p class="why">نحتاجه لبيئة التجربة في المرحلة الثانية، والانتقال لاحقاً مكلف.</p></div>
+        <div class="q"><h3>خدمة الرسائل والخرائط</h3><p class="rec"><b>نقترح:</b> مزود رسائل سعودي مرخص باسم مرسل مسجّل، ورمز تحقق من <span class="num">6</span> أرقام. والخرائط من Google Maps على حسابكم.</p><p class="why">تسجيل اسم المرسل يحتاج وقتاً، وتكلفة الخرائط بحسب الاستخدام على حسابكم.</p></div>
+        <div class="q"><h3>حساب GitHub لشركتكم</h3><p class="rec"><b>نقترح:</b> تنشئون حساب منظمة على GitHub، فننقل إليه الكود كاملاً بتاريخه.</p><p class="why">الكود مستضاف مؤقتاً على حسابنا إلى أن يتوفر حسابكم.</p></div>
+      </div>
+
+      <div class="later">
+        <h3>قرارات تُطلب لاحقاً، قبل المرحلة الثالثة</h3>
+        <ul>
+          <li><b>العمولة:</b> نسبتها (<span class="num">20%</span> مبدئياً) وهل تشمل رسوم الانتظار.</li>
+          <li><b>الأسعار:</b> التعرفة لكل فئة، ورسوم الانتظار والإلغاء.</li>
+          <li><b>الضريبة:</b> الأسعار شاملة الضريبة أم لا، وجهة إصدار الفاتورة، بعد استشارة مستشاركم الضريبي.</li>
+          <li><b>بوابة الدفع:</b> نرشح لكم مزودَين سعوديَّين مرخصَين، وتتعاقدون مع أحدهما.</li>
+        </ul>
+        <p style="color:var(--muted);font-size:14px">القائمة الكاملة، وفيها <span class="num">36</span> قراراً مع توصياتها، متاحة لمن يرغب في التفاصيل. لكن القرارات أعلاه هي كل ما نحتاجه الآن.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="next">
+    <div class="wrap">
+      <p class="eyebrow">الخطوات التالية</p>
+      <h2>لإقفال المرحلة الأولى</h2>
+      <div class="next">
+        <div><small>الخطوة 1</small><b>مراجعة الشاشات</b><p>جرّبوا <a href="../" style="color:#7BE3CE">النموذج التفاعلي</a> وأخبرونا بالموافقة أو بالتعديلات المطلوبة على كل قسم.</p></div>
+        <div><small>الخطوة 2</small><b>الرد على القرارات السبعة</b><p>بالموافقة على اقتراحنا، أو برأيكم، أو بموعد متوقع للقرار.</p></div>
+        <div><small>الخطوة 3</small><b>اعتماد المرحلة</b><p>نرسل لكم قائمة القبول للتوقيع، ثم نبدأ المرحلة الثانية.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>مَشوار · تسليم المرحلة الأولى</span>
+    <span>الوثائق التفصيلية للفريق التقني: <a href="https://github.com/jksoftwaresolutions/mashwar-prototype/tree/main/docs/phase1">docs/phase1</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

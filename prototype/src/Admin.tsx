@@ -194,7 +194,7 @@ function Overview({ go }: { go: (p: Page) => void }) {
           </div>
         </ChartCard>
         <ChartCard title={t('حالات الرحلات', 'Ride status')}>
-          <div className="h-44" dir="ltr"><ResponsiveContainer><PieChart><Pie data={pie} dataKey="v" nameKey="n" innerRadius={52} outerRadius={78} paddingAngle={3}>{pie.map((p) => <Cell key={p.n} fill={p.c} />)}</Pie><Tooltip {...tip} /></PieChart></ResponsiveContainer></div>
+          <div className="h-44" dir="ltr"><ResponsiveContainer><PieChart><Pie data={pie} dataKey="v" nameKey="n" isAnimationActive={false} innerRadius={52} outerRadius={78} paddingAngle={3}>{pie.map((p) => <Cell key={p.n} fill={p.c} />)}</Pie><Tooltip {...tip} /></PieChart></ResponsiveContainer></div>
           <div className="mt-2 grid grid-cols-2 gap-2">{pie.map((p) => <div key={p.n} className="flex items-center gap-2 text-xs"><span className="h-2.5 w-2.5 rounded-full" style={{ background: p.c }} /><span className="flex-1 text-muted">{p.n}</span><span className="font-bold">{p.v}%</span></div>)}</div>
         </ChartCard>
       </div>
@@ -615,7 +615,7 @@ function Reports() {
         </ChartCard>
         <div className="grid gap-4 sm:grid-cols-2">
           <ChartCard title={t('استخدام فئات المركبات', 'Category usage')}>
-            <div className="h-40"><ResponsiveContainer><PieChart><Pie data={cats} dataKey="v" nameKey="n" innerRadius={40} outerRadius={64}>{cats.map((c) => <Cell key={c.n} fill={c.c} />)}</Pie><Tooltip {...tip} /></PieChart></ResponsiveContainer></div>
+            <div className="h-40"><ResponsiveContainer><PieChart><Pie data={cats} dataKey="v" nameKey="n" isAnimationActive={false} innerRadius={40} outerRadius={64}>{cats.map((c) => <Cell key={c.n} fill={c.c} />)}</Pie><Tooltip {...tip} /></PieChart></ResponsiveContainer></div>
             <div className="space-y-1.5" dir="auto">{cats.map((c) => <div key={c.n} className="flex items-center gap-2 text-xs"><span className="h-2.5 w-2.5 rounded-full" style={{ background: c.c }} /><span className="flex-1">{c.n}</span><b>{c.v}%</b></div>)}</div>
           </ChartCard>
           <ChartCard title={t('توزيع تقييمات الكباتن', 'Captain ratings')}>
