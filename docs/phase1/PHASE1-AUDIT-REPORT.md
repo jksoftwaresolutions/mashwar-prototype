@@ -17,7 +17,7 @@ Scope: Phase 1 of the MASHWAR contract ($240, 6 days): requirements analysis, UI
 | Are the Phase 1 documents ready? | **Yes, for client review** — 11 deliverables plus admin architecture (12), revised in this audit. | §5 below |
 | What still needs the client? | Screen-by-screen design sign-off, review of the rules and architecture, and answers (or dates) for the decisions needed before Phase 2. | [CLIENT-DECISIONS.md](CLIENT-DECISIONS.md) |
 
-**Ready for acceptance?** Not yet. The delivery team's side is complete except a green CI run on GitHub after the foundation is pushed (awaiting authorisation to push). Android debug builds of both apps succeed; iOS build verification needs a Mac and moves to Phase 2. Acceptance also requires the client's sign-offs in the checklist.
+**Ready for acceptance?** Not yet. The delivery team's side is complete: the foundation was pushed and the GitHub Actions run passed on 2026-10-30 ([run 41041636730](https://github.com/jksoftwaresolutions/mashwar-prototype/actions/runs/41041636730)). Android debug builds of both apps succeed; iOS build verification needs a Mac and moves to Phase 2. Acceptance also requires the client's sign-offs in the checklist.
 
 ## 2. Validation performed (2026-10-30, Windows 11 workstation)
 
@@ -35,7 +35,7 @@ Scope: Phase 1 of the MASHWAR contract ($240, 6 days): requirements analysis, UI
 | Frozen install as in CI | `CI=true pnpm install --frozen-lockfile` (pnpm 10.34.3) | Pass |
 | Markdown links and anchors | custom checker over 20+ Markdown files | No broken links (after creating this report and its companions) |
 | Mermaid diagrams | `mermaid.parse` (Mermaid 11) in Chromium for all 10 diagrams | 10/10 parse after fixing one syntax error in 10 |
-| GitHub Actions run of the new monorepo workflow | — | **Not run yet**: requires pushing, which needs authorisation |
+| GitHub Actions run of the new monorepo workflow | [run 41041636730](https://github.com/jksoftwaresolutions/mashwar-prototype/actions/runs/41041636730), 2026-10-30 | Pass: all six jobs (prototype, backend + PostGIS, admin, mobile, Pages build, Pages deploy) |
 | iOS build | — | **Not run**: requires macOS + Xcode |
 
 ## 3. Deliverables matrix
@@ -100,7 +100,7 @@ Statuses: COMPLETE AND VERIFIED · IMPLEMENTED BUT NOT VERIFIED · DOCUMENTED ON
 | Authentication/role structure (foundation) | Yes | COMPLETE AND VERIFIED (roles and permissions) | `backend/src/auth/` with tests | Authentication itself is Phase 2 | D2 |
 | Repository configuration | Yes | COMPLETE AND VERIFIED | `.gitignore`, `.gitattributes`, workspaces, lockfile (frozen install verified) | — | D1 |
 | Development commands | Yes | COMPLETE AND VERIFIED | Root `package.json` scripts; README "Run it" (each command executed in this audit) | — | D1 |
-| Initial automated checks (CI) | Yes | IMPLEMENTED BUT NOT VERIFIED | `.github/workflows/deploy.yml`: prototype, backend + PostGIS service, admin, Flutter jobs | Push and confirm a green run | D9 |
+| Initial automated checks (CI) | Yes | COMPLETE AND VERIFIED | `.github/workflows/deploy.yml`: prototype, backend + PostGIS service, admin, Flutter jobs; green [run](https://github.com/jksoftwaresolutions/mashwar-prototype/actions/runs/41041636730) on 2026-10-30 | — | D9 |
 | Documentation for running the foundation | Yes | COMPLETE AND VERIFIED | Root README, app READMEs | — | D1 |
 
 ### E. Ownership and delivery
@@ -120,11 +120,11 @@ Counted from the matrix above (47 rows; a row is counted under the first status 
 
 | Status | Items |
 |---|---|
-| COMPLETE AND VERIFIED | 27 |
+| COMPLETE AND VERIFIED | 28 |
 | AWAITING CLIENT APPROVAL | 8 |
 | DOCUMENTED ONLY | 7 |
 | PARTIALLY COMPLETE | 3 |
-| IMPLEMENTED BUT NOT VERIFIED | 2 |
+| IMPLEMENTED BUT NOT VERIFIED | 1 |
 | MISSING | 0 |
 | OUT OF PHASE 1 SCOPE | 0 |
 
@@ -190,7 +190,7 @@ Two independent reviews read all documents in full. Verified findings were fixed
 ## 8. Remaining work
 
 **CRITICAL (before Phase 1 acceptance)**
-1. Push the foundation commit and confirm a green GitHub Actions run (needs authorisation).
+1. ~~Push the foundation commit and confirm a green GitHub Actions run~~ — done 2026-10-30.
 2. Client sign-off of checklist sections A–C; record change requests.
 
 **IMPORTANT (within Phase 1 if possible)**

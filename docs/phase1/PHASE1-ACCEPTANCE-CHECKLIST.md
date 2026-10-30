@@ -50,7 +50,7 @@ Overall design direction is already approved by the client ("The design is good 
 | D6 | iOS build of the scaffold | Needs a Mac with Xcode; not verified in Phase 1 | Delivery team | No (Phase 2) | [ ] |
 | D7 | Admin dashboard shell | `pnpm --filter @mashwar/admin build`; 3 tests | Delivery team | Yes | [x] |
 | D8 | Local services and environment templates | `infra/docker-compose.yml`, `backend/.env.example`, `admin/.env.example` | Delivery team | Yes | [x] |
-| D9 | Continuous integration for all parts | `.github/workflows/deploy.yml`; a green run on GitHub after the foundation is pushed | Delivery team | Yes | [ ] pending push |
+| D9 | Continuous integration for all parts | `.github/workflows/deploy.yml`; green [run](https://github.com/jksoftwaresolutions/mashwar-prototype/actions/runs/41041636730) on 2026-10-30 | Delivery team | Yes | [x] |
 | D10 | Prototype regression suite | 24 Playwright tests pass | Delivery team | Yes | [x] |
 
 ## E. Ownership and delivery
