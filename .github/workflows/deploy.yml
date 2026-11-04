@@ -113,7 +113,7 @@ jobs:
 
   pages-build:
     name: Build prototype for GitHub Pages
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.repository == 'jksoftwaresolutions/mashwar-prototype' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: [prototype]
     runs-on: ubuntu-latest
     steps:
