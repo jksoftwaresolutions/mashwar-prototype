@@ -60,7 +60,7 @@ Overall design direction is already approved by the client ("The design is good 
 | E1 | Source, designs and documents organised in one repository with history | Git log, repository tree | Delivery team | Yes | [x] |
 | E2 | No secrets committed (only local/CI development passwords for disposable databases) | PHASE1-AUDIT-REPORT.md §6 | Delivery team | Yes | [x] |
 | E3 | Prototype hosting identified as temporary demo hosting | Root README | Delivery team | Yes | [x] |
-| E4 | Repository transferred to the client's GitHub organisation | Client provides the organisation (C9); team transfers | Client + team | Yes, when provided | [ ] |
+| E4 | Repository delivered to the client's GitHub account | Private client repository holds the full code and history; [CI run](https://github.com/mohamedsj111-jpg/mashwar.app/actions/runs/41877237495) passed | Client + team | Yes | [x] |
 | E5 | Client-side long-lead accounts started (Apple, Google Play, hosting, SMS, maps, PSP) | CLIENT-DECISIONS C4–C10 | Client | No (needed for Phases 2–3) | [ ] |
 
 ## Sign-off

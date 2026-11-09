@@ -59,4 +59,4 @@ cd apps/rider && flutter test && flutter run
 
 ## Ownership
 
-All source code, designs and project assets belong to the client. This repository is the client's copy. The prototype preview linked above stays on temporary demo hosting. Production accounts (Apple, Google Play, payment gateway, hosting, SMS, domain) are opened under the client's ownership.
+All source code, designs and project assets belong to the client. The source of record is the client's private GitHub repository. The prototype preview linked above stays on temporary demo hosting. Production accounts (Apple, Google Play, payment gateway, hosting, SMS, domain) are opened under the client's ownership.

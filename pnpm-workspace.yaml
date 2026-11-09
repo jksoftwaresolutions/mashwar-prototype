@@ -2,3 +2,7 @@ packages:
   - prototype
   - backend
   - admin
+
+# @nestjs/platform-express pins an older multer with a known denial-of-service issue.
+overrides:
+  multer: ^2.5.0

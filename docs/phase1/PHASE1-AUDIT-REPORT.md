@@ -13,7 +13,7 @@ Scope: Phase 1 of the MASHWAR contract ($240, 6 days): requirements analysis, UI
 | Does the backend scaffold exist? | **Yes** — NestJS with configuration validation, health check, migration runner, trip state machine and staff permission map. | `backend/`; 20 unit tests pass; built server answers `GET /v1/health` with 200 against PostgreSQL |
 | Is the PostgreSQL schema implemented or only designed? | **Implemented and tested** as migrations (49 tables in 9 schemas). | `backend/db/migrations/`; 10 database tests pass on PostgreSQL 17 + PostGIS 3.5 |
 | Are authentication and permissions coded? | **Permissions: coded at foundation level** (roles, permission map, guard, tests). **Authentication: documented only** — OTP, tokens and staff MFA are built in Phase 2/3. | `backend/src/auth/`; 07 §9; 12 §2 |
-| Is the repository under client ownership? | **No.** Hosted temporarily under the delivery team's GitHub account until the client provides an organisation. | CLIENT-DECISIONS C9 |
+| Is the repository under client ownership? | **Yes.** The full code and history were delivered to the client's private GitHub repository on 2026-11-04. The prototype preview stays on temporary demo hosting. | E4, CLIENT-DECISIONS C9 |
 | Are the Phase 1 documents ready? | **Yes, for client review** — 11 deliverables plus admin architecture (12), revised in this audit. | §5 below |
 | What still needs the client? | Screen-by-screen design sign-off, review of the rules and architecture, and answers (or dates) for the decisions needed before Phase 2. | [CLIENT-DECISIONS.md](CLIENT-DECISIONS.md) |
 
@@ -110,7 +110,7 @@ Statuses: COMPLETE AND VERIFIED · IMPLEMENTED BUT NOT VERIFIED · DOCUMENTED ON
 | Source and design assets organised | Yes | COMPLETE AND VERIFIED | Repository tree, design/README.md | — | E1 |
 | Git history preserved | Yes | COMPLETE AND VERIFIED | The prototype was moved with `git mv` (history follows); 2 prior commits on `main` | — | E1 |
 | No secrets committed | Yes | COMPLETE AND VERIFIED | §6 | — | E2 |
-| Client-owned repository | Yes | AWAITING CLIENT APPROVAL | Repository under the delivery team's account | Client provides a GitHub organisation (C9); transfer | E4 |
+| Client-owned repository | Yes | COMPLETE AND VERIFIED | Full code and history in the client's private repository; [CI run](https://github.com/mohamedsj111-jpg/mashwar.app/actions/runs/41877237495) passed on 2026-11-04 | Optional move to a company organisation (C9) | E4 |
 | Temporary demo hosting identified | Yes | COMPLETE AND VERIFIED | README: GitHub Pages preview labelled temporary, simulated data, no indexing | — | E3 |
 | Handover documentation | Yes (Phase 1 level) | COMPLETE AND VERIFIED | README, HANDOFF.md, DESIGN_SYSTEM.md, docs/phase1 | Full handover is Phase 4 | — |
 
@@ -120,8 +120,8 @@ Counted from the matrix above (47 rows; a row is counted under the first status 
 
 | Status | Items |
 |---|---|
-| COMPLETE AND VERIFIED | 28 |
-| AWAITING CLIENT APPROVAL | 8 |
+| COMPLETE AND VERIFIED | 29 |
+| AWAITING CLIENT APPROVAL | 7 |
 | DOCUMENTED ONLY | 7 |
 | PARTIALLY COMPLETE | 3 |
 | IMPLEMENTED BUT NOT VERIFIED | 1 |
@@ -195,7 +195,7 @@ Two independent reviews read all documents in full. Verified findings were fixed
 
 **IMPORTANT (within Phase 1 if possible)**
 3. Client answers or dates for CLIENT-DECISIONS section A (C1–C9), especially developer accounts (long lead).
-4. Repository transfer to the client's GitHub organisation (C9).
+4. ~~Deliver the repository to the client's GitHub account~~ (done 2026-11-04).
 
 **FUTURE (Phases 2–4, not started)**
 5. iOS build verification on a Mac; app icons and splash from the final brand.

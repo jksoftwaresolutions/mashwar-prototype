@@ -20,7 +20,7 @@ This list contains only business and operational decisions that need the client.
 | C6 | Hosting provider and data region | A provider with a Saudi region, subject to the client's counsel on PDPL and data residency. | Region affects latency, cost and compliance; moving later is expensive. | Phase 2 (staging) | 03 Q17, 07 §11 |
 | C7 | SMS/OTP provider and OTP format | A licensed Saudi SMS provider with a registered sender ID; 6-digit codes valid for 5 minutes (the prototype shows 4 digits). | Sender-ID registration takes time; 6 digits resist guessing better. | Phase 2 | 07 §9 |
 | C8 | Maps provider | Google Maps Platform (Arabic place names and coverage in Riyadh), billed to the client's account; Mapbox as the alternative. | Usage-based cost on the client's account; affects map look and directions quality. | Phase 2 | 08 §8 |
-| C9 | GitHub organisation for the client-owned repository | Client creates an organisation and we transfer the repository with its history. | Until then the repository is hosted temporarily under the delivery team's account. | Before Phase 2 (recommended) | README.md |
+| C9 | Long-term home of the client's repository | Keep it in the client's private repository, where the code and history were delivered on 2026-11-04. Move it to a company organisation if the client wants one. | An organisation makes team access easier to manage. Delivery does not depend on this. | When convenient | README.md |
 
 ## B. Needed before Phase 3 (pricing, payments, admin)
 
