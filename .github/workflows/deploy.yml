@@ -16,7 +16,7 @@ concurrency:
 jobs:
   prototype:
     name: Prototype (typecheck + Playwright)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -40,7 +40,7 @@ jobs:
 
   backend:
     name: Backend (unit + PostgreSQL schema tests)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgis/postgis:17-3.5
@@ -72,7 +72,7 @@ jobs:
 
   admin:
     name: Admin shell (typecheck + test + build)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -89,7 +89,7 @@ jobs:
 
   mobile:
     name: Mobile (flutter analyze + tests)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: mobile
@@ -115,7 +115,7 @@ jobs:
     name: Build prototype for GitHub Pages
     if: github.repository == 'jksoftwaresolutions/mashwar-prototype' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: [prototype]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -139,7 +139,7 @@ jobs:
   pages-deploy:
     name: Deploy prototype preview
     needs: pages-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       pages: write
       id-token: write
